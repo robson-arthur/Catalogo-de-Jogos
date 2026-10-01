@@ -1,12 +1,13 @@
 #classe base, tem as informações básicas de todo jogo
 class Jogo():                                                                            
     def __init__(self, titulo=str, genero=str, plataforma=str, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0):
-        self.__titulo = titulo
-        self.__genero = genero
-        self.__plataforma = plataforma
-        self.__status = status
-        self.__horas_jogadas = horas_jogadas
-        self.__avaliacao = avaliacao
+        #atributos: __titulo, __genero, __plataforma, __status, __horas_jogadas, __avaliacao. todos são privados e possuem getter e setter
+        self.titulo = titulo
+        self.genero = genero
+        self.plataforma = plataforma
+        self.status = status
+        self.horas_jogadas = horas_jogadas
+        self.avaliacao = avaliacao
 
     def __str__(self):
         return f"Nome: {self.__titulo} \nGênero: {self.__genero} \nPlataforma: {self.__plataforma} \nStatus: {self.__status} \nHoras de jogo: {self.__horas_jogadas} \nAvaliação: {self.__avaliacao}"
@@ -23,7 +24,7 @@ class Jogo():
             else:
                 raise Exception("Título vazio inválido")
         else:
-            raise TypeError("Tipo do título inválido")
+            raise TypeError("Tipo da variável título inválido")
 
     @property
     def genero(self):
@@ -37,34 +38,62 @@ class Jogo():
             else:
                 raise Exception("Gênero vazio inválido")
         else:
-            raise TypeError("Tipo do gênero inválido")
+            raise TypeError("Tipo da variável do gênero inválido")
 
     @property
     def plataforma(self):
         return self.__plataforma
 
-    @genero.setter
+    @plataforma.setter
     def plataforma(self, nova_plataforma):
         if isinstance(nova_plataforma, str):
             if len(nova_plataforma) > 0:
-                self.__genero = nova_plataforma
+                self.__plataforma = nova_plataforma
             else:
                 raise Exception("Plataforma vazia inválida")
         else:
-            raise TypeError("Tipo da plataforma inválida")
+            raise TypeError("Tipo da variável da plataforma inválido")
 
     @property
     def status(self):
-        return self.__plataforma
+        return self.__status
 
-    @genero.setter
+    @status.setter
     def status(self, nova_plataforma):
         if isinstance(nova_plataforma, str):
-            if len(nova_plataforma) > 0:
-                self.__genero = nova_plataforma
+            if not (len(nova_plataforma) > 0):
+                raise Exception("Status vazio inválido")
+            if nova_plataforma not in ["NÃO INICIADO", "JOGANDO", "FINALIZADO"]:
+                raise Exception("Categoria de Status inválida")
             else:
-                raise Exception("Plataforma vazia inválida")
+                self.__status = nova_plataforma
         else:
-            raise TypeError("Tipo do status inválido")
+            raise TypeError("Tipo da variável do status inválido")
 
-    
+    @property
+    def horas_jogadas(self):
+        return self.__horas_jogadas
+
+    @horas_jogadas.setter
+    def horas_jogadas(self, nova_hora):
+        if isinstance(nova_hora, float) or isinstance(nova_hora, int):
+            if nova_hora >= 0:
+                self.__horas_jogadas = nova_hora
+            else:
+                raise Exception("Hora menor que zero")
+        else:
+            raise TypeError("Hora não é do tipo válido")
+
+    @property
+    def avaliacao(self):
+        return self.__avaliacao
+
+    @avaliacao.setter
+    def avaliacao(self, nova_avaliacao):
+        if isinstance(nova_avaliacao, int):
+            if nova_avaliacao in range(0,11):
+                self.__avaliacao = nova_avaliacao
+            else:
+                raise Exception("Avaliação fora do intervalo esperado")
+        else:
+            raise TypeError("Tipo da variável da avaliação inválido")
