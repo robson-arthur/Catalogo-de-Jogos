@@ -99,9 +99,12 @@ class Jogo():
     @avaliacao.setter
     def avaliacao(self, nova_avaliacao):
         if isinstance(nova_avaliacao, int):
-            if nova_avaliacao in range(0,11):
-                self.__avaliacao = nova_avaliacao
+            if self.__status == "FINALIZADO":
+                if nova_avaliacao in range(0,11):
+                    self.__avaliacao = nova_avaliacao
+                else:
+                    raise Exception("Avaliação fora do intervalo esperado")
             else:
-                raise Exception("Avaliação fora do intervalo esperado")
+                raise Exception("Jogo não finalizado, avaliação indisponível")
         else:
             raise TypeError("Tipo da variável da avaliação inválido")
