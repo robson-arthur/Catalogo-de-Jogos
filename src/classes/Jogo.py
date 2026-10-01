@@ -2,6 +2,7 @@
 class Jogo():                                                                            
     def __init__(self, titulo=str, genero=str, plataforma=str, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0):
         #atributos: __titulo, __genero, __plataforma, __status, __horas_jogadas, __avaliacao. todos são privados e possuem getter e setter
+        #apenas os atributos titulo, genero e plataforma são obrigatórios, os outros são definidos por padrão como acima
         self.titulo = titulo
         self.genero = genero
         self.plataforma = plataforma
@@ -12,6 +13,13 @@ class Jogo():
     def __str__(self):
         return f"Nome: {self.__titulo} \nGênero: {self.__genero} \nPlataforma: {self.__plataforma} \nStatus: {self.__status} \nHoras de jogo: {self.__horas_jogadas} \nAvaliação: {self.__avaliacao}"
 
+    def __eq__(self, other):
+        if isinstance(other, Jogo):
+            return self.__titulo == other.__titulo and self.__plataforma == other.__plataforma
+        else:
+            return False ##caso o objeto other nao seja da classe Jogo, o retorna False
+
+    
     @property
     def titulo(self):
         return self.__titulo
