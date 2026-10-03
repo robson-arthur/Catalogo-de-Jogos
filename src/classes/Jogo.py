@@ -19,7 +19,6 @@ class Jogo():
             return self.__titulo == other.__titulo and self.__plataforma == other.__plataforma
         else:
             return "Objeto não pertence a classe Jogo" ##caso o objeto other nao seja da classe Jogo, retorna False
-
     
     @property
     def titulo(self):
@@ -28,10 +27,12 @@ class Jogo():
     @titulo.setter
     def titulo(self, novo_titulo):
         if isinstance(novo_titulo, str):
-            if len(novo_titulo) > 0:
-                self.__titulo = novo_titulo
-            else:
+            if len(novo_titulo) == 0:
                 raise Exception("Título vazio inválido")
+            elif len(novo_titulo) > 20:                                   ## maior número de caracteres é 20
+                raise Exception("Título com mais de 20 caracteres")
+            else:
+                self.__titulo = novo_titulo
         else:
             raise TypeError("Tipo da variável título inválido")
 
@@ -42,10 +43,12 @@ class Jogo():
     @genero.setter
     def genero(self, novo_genero):
         if isinstance(novo_genero, str):
-            if len(novo_genero) > 0:
-                self.__genero = novo_genero
-            else:
+            if len(novo_genero) == 0:
                 raise Exception("Gênero vazio inválido")
+            elif len(novo_genero) > 20:
+                raise Exception("Gênero com mais de 20 caracteres inválido")
+            else:
+                self.__genero = novo_genero
         else:
             raise TypeError("Tipo da variável do gênero inválido")
 
@@ -56,10 +59,12 @@ class Jogo():
     @plataforma.setter
     def plataforma(self, nova_plataforma):
         if isinstance(nova_plataforma, str):
-            if len(nova_plataforma) > 0:
-                self.__plataforma = nova_plataforma
-            else:
+            if len(nova_plataforma) == 0:
                 raise Exception("Plataforma vazia inválida")
+            elif len(nova_plataforma) > 10:
+                raise Exception("Plataforma com mais de 10 caracteres inválida")
+            else:
+                self.__plataforma = nova_plataforma
         else:
             raise TypeError("Tipo da variável da plataforma inválido")
 
@@ -68,14 +73,14 @@ class Jogo():
         return self.__status
 
     @status.setter
-    def status(self, nova_plataforma):
-        if isinstance(nova_plataforma, str):
-            if not (len(nova_plataforma) > 0):
+    def status(self, novo_status):
+        if isinstance(novo_status, str):
+            if not (len(novo_status) > 0):
                 raise Exception("Status vazio inválido")
-            if nova_plataforma not in ["NÃO INICIADO", "JOGANDO", "FINALIZADO"]:
+            elif novo_status not in ["NÃO INICIADO", "JOGANDO", "FINALIZADO"]:
                 raise Exception("Categoria de Status inválida")
             else:
-                self.__status = nova_plataforma
+                self.__status = novo_status
         else:
             raise TypeError("Tipo da variável do status inválido")
 
