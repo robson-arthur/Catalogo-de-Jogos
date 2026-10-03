@@ -15,9 +15,10 @@ class Jogo():
 
     def __eq__(self, other):
         if isinstance(other, Jogo):
+            ##caso os objetos tenham título e plataforma igual, retorna True, do contrário retorna False
             return self.__titulo == other.__titulo and self.__plataforma == other.__plataforma
         else:
-            return False ##caso o objeto other nao seja da classe Jogo, o retorna False
+            return "Objeto não pertence a classe Jogo" ##caso o objeto other nao seja da classe Jogo, retorna False
 
     
     @property
