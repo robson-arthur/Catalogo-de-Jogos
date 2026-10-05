@@ -2,7 +2,7 @@
 #classe que agrupa objetos do tipo jogo
 class Colecao():   
     def __init__(self, nome_colecao):
-        self.__nome_colecao = nome_colecao
+        self.nome_colecao = nome_colecao
         self.__numero_jogos = 0
 
     def __str__(self):
