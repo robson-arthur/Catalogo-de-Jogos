@@ -4,8 +4,8 @@ class JogoCampanha(Jogo):
     def __init__(self, titulo, genero, plataforma, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0, progresso=0, percent_conclusao=0.0):
         #o super herda as informações e métodos da subclasse, pegando apenas as informações proprias da subclasse
         super().__init__(titulo, genero, plataforma, status, horas_jogadas, avaliacao)
-        self.__progresso = progresso
-        self.__percent_conclusao = percent_conclusao
+        self.progresso = progresso
+        self.percent_conclusao = percent_conclusao
 
     def __str__(self):
         return f"{super().__str__()} \nProgesso de missões/capitulos: {self.__progresso} \nPercentual de conclusão: {self.__percent_conclusao}"
