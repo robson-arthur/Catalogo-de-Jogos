@@ -60,7 +60,7 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
 
 - Classe Colecao:
     - Atributos:
-        - Número de Jogos, Gênero Favorito, Nome da Coleção
+        - Número de Jogos, Nome da Coleção
     - Métodos:
       - ```adicionarJogo()```, ```removerJogo()```
 
