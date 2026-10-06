@@ -1,12 +1,23 @@
-
+from Jogo import Jogo
 #classe que agrupa objetos do tipo jogo
-class Colecao():   
-    def __init__(self, nome_colecao):
+class Colecao():
+    """Objeto que agrupa outros objetos do tipo Jogo
+    Atributos:
+    nome_colecao: str
+    numero: int
+    jogos: list[Jogo]
+    """
+
+    def __init__(self, nome_colecao: str, numero_jogos: int, jogos: list[Jogo]):
         self.nome_colecao = nome_colecao
-        self.__numero_jogos = 0
+        self.__numero_jogos = numero_jogos
+        self.__jogos = jogos
 
     def __str__(self):
-        return f"Nome da coleção: {self.__nome_colecao} \nNúmero de jogos: {self.__numero_jogos}"
+        return f"{self.__nome_colecao}, {self.__numero_jogos}, {self.__jogos}"
+    
+    def __repr__(self):
+        return f"Nome da coleção: {self.__nome_colecao} \nNúmero de jogos: {self.__numero_jogos} \nJogos: {self.__jogos}"
 
     def __eq__(self, other):
         if isinstance(other, Colecao):
