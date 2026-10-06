@@ -1,9 +1,9 @@
 from Jogo import *
 #subclasse de Jogo, especifio para jogos no estilo campanha
 class JogoCampanha(Jogo):                                                                                           
-    def __init__(self, titulo, genero, plataforma, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0, progresso=0, percent_conclusao=0.0):
+    def __init__(self, titulo, genero, plataforma, status="NÃO INICIADO", horas_jogadas=0.0, progresso=0, percent_conclusao=0.0):
         #o super herda as informações e métodos da subclasse, pegando apenas as informações proprias da subclasse
-        super().__init__(titulo, genero, plataforma, status, horas_jogadas, avaliacao)
+        super().__init__(titulo, genero, plataforma, status, horas_jogadas)
         self.progresso = progresso
         self.percent_conclusao = percent_conclusao
 
@@ -43,3 +43,5 @@ class JogoCampanha(Jogo):
             raise TypeError("Tipo da variável percentual de conclusão inválida")
     
 
+j1 = JogoCampanha("GTA", "1", "ps5")
+print(j1)
