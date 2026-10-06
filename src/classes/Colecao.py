@@ -41,4 +41,7 @@ class Colecao():
                 self.__nome_colecao = novo_nome
         else:
             raise TypeError("Variável não é do tipo str")
-    
+
+    @property
+    def jogos(self):
+        return f"{self.__jogos}"
