@@ -1,7 +1,26 @@
 import Jogo
 
-#subclasse de Jogo para jogos cooperativos
 class JogoCooperativo(Jogo):
+    """Subclasse de Jogo para jogos no estilo cooperativo. Engloba o máximo de jogadores, as sessões cooperativas e os participantes frequentes
+
+    Atributos:
+
+    titulo: str
+
+    genero: str
+
+    plataforma: str
+
+    status: str
+
+    horas_jogadas: float
+
+    max_jogadores: int
+
+    sessoes_coop: int
+
+    participantes_frequentes: list[str]
+    """
     def __init__(self, titulo, genero, plataforma, status, horas_jogadas, max_jogadores, sessoes_coop=0, participantes_frequentes=[]):
         super().__init__(titulo, genero, plataforma, status, horas_jogadas)
         self.__max_jogadores = max_jogadores

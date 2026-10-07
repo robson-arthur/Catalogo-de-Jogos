@@ -2,7 +2,31 @@ import Jogo
 
 #subclasse de Jogo, especifico para jogos no estilo competitivo
 class JogoCompetitivo(Jogo):
-    def __init__(self, titulo, genero, plataforma, status, horas_jogadas, partidas=0, rank="SEM RANK"):
+    """Subclasse de Jogo, engloba as partidas totais, número de vitórias, número de derrotas, rank e taxa de vitórias
+
+    Atributos:
+
+    titulo: str
+
+    genero: str
+
+    plataforma: str
+
+    status: str
+
+    horas_jogadas: float
+
+    partidas: int
+
+    vit: int
+
+    der: int
+
+    rank: str
+
+    taxa_vit: float
+    """
+    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, partidas=0, rank="SEM RANK"):
         super().__init__(titulo, genero, plataforma, status, horas_jogadas)
         self.partidas = partidas
         self.__vit = 0

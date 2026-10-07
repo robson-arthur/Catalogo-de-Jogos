@@ -3,6 +3,13 @@ import sqlite3 as s
 from sqlite3 import Error  #permite analisar o erro caso aconteça na conexão
 
 def conectar(nome_banco="dados.db", pasta="src/database"):
+    """Conecta ao banco de dados se já existente, ou cria um novo banco de dados
+    
+    Atributos:
+    
+    nome_banco: str
+    pasta: str
+    """
     #inicializa a variável conexão com um valor nulo
     conexao = None
     try:

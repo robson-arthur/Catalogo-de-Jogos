@@ -1,6 +1,18 @@
-#classe base, tem as informações básicas de todo jogo
-class Jogo():                                                                            
-    def __init__(self, titulo=str, genero=str, plataforma=str, status="NÃO INICIADO", horas_jogadas=0.0):
+class Jogo():
+    '''Classe pai que define os jogos a serem cadastrados. Possui os atributos comuns as subclasses JogoCampanha, JogoCooperativo e JogoCompetitivo.
+
+    Atributos:
+
+    titulo: str
+
+    genero: str
+
+    plataforma: str
+
+    status: str
+
+    horas_jogadas: float'''                                                                      
+    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0):
         #atributos: _titulo, _genero, _plataforma, _status, _horas_jogadas, _avaliacao. todos são privados e possuem getter e setter
         #apenas os atributos titulo, genero e plataforma são obrigatórios, os outros são definidos por padrão como acima
         self.titulo = titulo

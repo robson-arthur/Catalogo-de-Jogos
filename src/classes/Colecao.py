@@ -1,5 +1,5 @@
 from Jogo import Jogo
-#classe que agrupa objetos do tipo jogo
+
 class Colecao():
     """Objeto que agrupa outros objetos do tipo Jogo
     Atributos:
