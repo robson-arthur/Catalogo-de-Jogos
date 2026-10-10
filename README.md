@@ -65,7 +65,7 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
       - ```adicionarJogo()```, ```removerJogo()```
 
 ## UML textual
-![UML textual](src/UML.png)
+![UML textual](docs/UML.drawio.png)
 
 ## Instruções de uso
 
