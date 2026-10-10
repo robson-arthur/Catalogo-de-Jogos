@@ -1,4 +1,4 @@
-import Jogo
+from Jogo import *
 
 class JogoCooperativo(Jogo):
     """Subclasse de Jogo para jogos no estilo cooperativo. Engloba o máximo de jogadores, as sessões cooperativas e os participantes frequentes

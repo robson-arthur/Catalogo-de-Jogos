@@ -1,4 +1,4 @@
-import Jogo
+from Jogo import *
 
 #subclasse de Jogo, especifico para jogos no estilo competitivo
 class JogoCompetitivo(Jogo):

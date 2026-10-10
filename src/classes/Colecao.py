@@ -2,9 +2,13 @@ from Jogo import Jogo
 
 class Colecao():
     """Objeto que agrupa outros objetos do tipo Jogo
+
     Atributos:
+
     nome_colecao: str
-    numero: int
+
+    numero_jogos: int
+    
     jogos: list[Jogo]
     """
 
@@ -22,7 +26,7 @@ class Colecao():
     def __eq__(self, other):
         if isinstance(other, Colecao):
             ##caso os objetos tenham nomes iguais, retorna True, do contrário retorna False
-            return self.__nome_colecao == other.____nome_colecao
+            return self.__nome_colecao == other.__nome_colecao
         else:
             return "Objeto não pertence a classe Colecao" ##caso o objeto other nao seja da classe Colecao, retorna False
 
