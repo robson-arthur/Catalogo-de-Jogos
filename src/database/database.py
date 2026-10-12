@@ -41,3 +41,4 @@ def conectar(nome_banco="dados.db", pasta="src/database"):
         print(f"Não foi possível conectar ou criar o banco de dados: {Error}")
 
     return conexao   ##retorna o estado da conexão, apenas se ela for concluida retornará True
+
