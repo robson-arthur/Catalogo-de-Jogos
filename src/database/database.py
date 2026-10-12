@@ -30,9 +30,7 @@ def conectar(nome_banco="dados.db", pasta="src/database"):
         # isso permite acessar os dados das colunas facilmente pelo nome, como "linha[nome_da_coluna]"
         conexao.row_factory = s.Row 
 
-        if dados_existe:
-            print(f"Banco da dados '{nome_banco}' já criado, conexão realizada")
-        else:
+        if not dados_existe:
             print(f"Arquivo '{nome_banco}' criado, conexão realizada")
 
         return conexao

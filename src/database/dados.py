@@ -56,10 +56,32 @@ class dados():
                         );
                     """)
                     conexao.commit()
-                    print("Tabela colecoes criada com sucesso.")
                 except Exception:
                         print(f"Erro ao criar tabela: {Exception}")
                 finally:
                         conexao.close()
-        else:
-            print("Tabela colecoes já criada.")
+
+    #Tratar jogos
+    def criarTabelaJogos(self):
+        jogos_existem = self.tabela_existe("jogos")
+        if not jogos_existem:
+            conexao = conectar()
+            if conexao:
+                try:
+                    ##criando cursor para modificar tabelas
+                    cursor = conexao.cursor()
+                    cursor.execute("""
+                        CREATE TABLE IF NOT EXISTS jogos (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        titulo TEXT NOT NULL,
+                        genero TEXT NOT NULL,
+                        plataforma TEXT NOT NULL,
+                        status TEXT NOT NULL,
+                        horas_jogadas REAL
+                        );
+                    """)
+                    conexao.commit()
+                except Error:
+                        print(f"Erro ao criar tabela: {Error}")
+                finally:
+                        conexao.close()
