@@ -16,27 +16,27 @@ class Colecao():
     jogos: list[Jogo]
     """
 
-    def __init__(self, nome_colecao: str, numero_jogos: int, jogos: list[Jogo]):
+    def __init__(self, nome_colecao: str, numero_jogos=0, jogos=""):
         self.nome_colecao = nome_colecao
-        self.__numero_jogos = numero_jogos
-        self.__jogos = jogos
+        self._numero_jogos = numero_jogos
+        self._jogos = jogos
 
     def __str__(self):
-        return f"{self.__nome_colecao}, {self.__numero_jogos}, {self.__jogos}"
+        return f"{self._nome_colecao}, {self._numero_jogos}, {self._jogos}"
     
     def __repr__(self):
-        return f"Nome da coleção: {self.__nome_colecao} \nNúmero de jogos: {self.__numero_jogos} \nJogos: {self.__jogos}"
+        return f"Nome da coleção: {self._nome_colecao} \nNúmero de jogos: {self._numero_jogos} \nJogos: {self._jogos}"
 
     def __eq__(self, other):
         if isinstance(other, Colecao):
             ##caso os objetos tenham nomes iguais, retorna True, do contrário retorna False
-            return self.__nome_colecao == other.__nome_colecao
+            return self._nome_colecao == other._nome_colecao
         else:
             return "Objeto não pertence a classe Colecao" ##caso o objeto other nao seja da classe Colecao, retorna False
 
     @property
     def nome_colecao(self):
-        return self.__nome_colecao
+        return self._nome_colecao
 
     @nome_colecao.setter
     def nome_colecao(self, novo_nome):
@@ -46,10 +46,10 @@ class Colecao():
             elif len(novo_nome) > 20:
                 raise Exception("Nome da coleção maior que 20 caracteres")
             else:
-                self.__nome_colecao = novo_nome
+                self._nome_colecao = novo_nome
         else:
             raise TypeError("Variável não é do tipo str")
 
     @property
     def jogos(self):
-        return f"{self.__jogos}"
+        return f"{self._jogos}"

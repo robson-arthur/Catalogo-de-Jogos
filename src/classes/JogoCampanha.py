@@ -27,7 +27,7 @@ class JogoCampanha(Jogo):
         self.percent_conclusao = percent_conclusao
 
     def __str__(self):
-        return f"{super().__str__()} \nProgesso de missões/capitulos: {self.__progresso} \nPercentual de conclusão: {self.__percent_conclusao}"
+        return f"{super().__str__()} \nProgesso de missões/capitulos: {self._progresso} \nPercentual de conclusão: {self._percent_conclusao}"
 
     ##usa o msm __eq__ da classe pai
     def __eq__(self, other):
@@ -35,13 +35,13 @@ class JogoCampanha(Jogo):
 
     @property
     def progresso(self):
-        return self.__progresso
+        return self._progresso
 
     @progresso.setter
     def progresso(self, novo_progresso):
         if isinstance(novo_progresso, int):
             if novo_progresso >= 0 and novo_progresso < 1000:
-                self.__progresso = novo_progresso
+                self._progresso = novo_progresso
             else:
                 raise Exception("Valor de progresso inválido")
         else:
@@ -49,18 +49,15 @@ class JogoCampanha(Jogo):
 
     @property
     def percent_conclusao(self):
-        return self.__percent_conclusao
+        return self._percent_conclusao
 
     @percent_conclusao.setter
     def percent_conclusao(self, novo_percent):
         if isinstance(novo_percent, float):
             if novo_percent >= 0 and novo_percent <= 100:
-                self.__percent_conclusao = novo_percent
+                self._percent_conclusao = novo_percent
             else:
                 raise Exception("Valor de percentual inválido")
         else:
             raise TypeError("Tipo da variável percentual de conclusão inválida")
     
-
-j1 = JogoCampanha("GTA", "1", "ps5")
-print(j1)
