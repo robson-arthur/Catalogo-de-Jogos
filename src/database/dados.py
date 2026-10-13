@@ -3,10 +3,9 @@ import os
 import sys
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
-from src.classes import Colecao
+from src.classes.Colecao import Colecao
 from src.database.database import conectar
-import sqlite3 as s
-from sqlite3 import Error  #permite analisar o erro caso aconteça na conexão
+from sqlite3 import Error  #permite analisar o erro caso aconteça ao tratar os dados
 
 class dados():
     """Interface que trata os métodos CRUD do banco de dados.
@@ -75,7 +74,7 @@ class dados():
 
                 # tabela intermediária: colecoes_jogos serve para relação de muitos para muitos
                 cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS colecao_jogos (
+                        CREATE TABLE IF NOT EXISTS colecoes_jogos (
                         colecao_id INTEGER,
                         jogo_id INTEGER,
                         PRIMARY KEY (colecao_id, jogo_id),
@@ -119,9 +118,33 @@ class dados():
                 """)
 
                 conexao.commit()
-                print("Sucesso")
 
             except Error:
                  print(f"Erro ao criar tabelas: {Error}")
             finally:
                 conexao.close()
+
+    # Tratar coleções
+    def adicionarColecao(self, nova_colecao: Colecao):
+        # checa se a tabela existe no banco de dados
+        if not self.tabela_existe("colecoes"):
+            self.criarTabelasBD()
+
+        # checa se a variável é do tipo coleção
+        if isinstance(nova_colecao, Colecao):
+            conexao = conectar()
+            if conexao:
+                try:
+                    cursor = conexao.cursor()
+
+                    cursor.execute(
+                            "INSERT INTO colecoes (nome_colecao, numero_jogos, jogos) VALUES (?, ?, ?)",
+                            (nova_colecao.nome_colecao, nova_colecao._numero_jogos, nova_colecao.jogos)
+                    )
+                    conexao.commit()
+                except Error:
+                    print(f"Erro ao adicionar Coleção: {Error}")
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo de coleção inválido")
