@@ -12,7 +12,7 @@ class Jogo():
     status: str
 
     horas_jogadas: float'''                                                                      
-    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0):
+    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0):
         #atributos: _titulo, _genero, _plataforma, _status, _horas_jogadas, _avaliacao. todos são privados e possuem getter e setter
         #apenas os atributos titulo, genero e plataforma são obrigatórios, os outros são definidos por padrão como acima
         self.titulo = titulo
@@ -20,7 +20,7 @@ class Jogo():
         self.plataforma = plataforma
         self.status = status
         self.horas_jogadas = horas_jogadas
-        self._avaliacao = 0
+        self._avaliacao = avaliacao
 
     def __str__(self):
         return f"Nome: {self._titulo} \nGênero: {self._genero} \nPlataforma: {self._plataforma} \nStatus: {self._status} \nHoras de jogo: {self._horas_jogadas} \nAvaliação: {self._avaliacao}"

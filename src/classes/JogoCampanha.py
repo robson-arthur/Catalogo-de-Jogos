@@ -24,9 +24,9 @@ class JogoCampanha(Jogo):
     percent_conclusao: float
 
     """                                                                                           
-    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, progresso=0, percent_conclusao=0.0):
+    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0, progresso=0, percent_conclusao=0.0):
         #o super herda as informações e métodos da subclasse, pegando apenas as informações proprias da subclasse
-        super().__init__(titulo, genero, plataforma, status, horas_jogadas)
+        super().__init__(titulo, genero, plataforma, status, horas_jogadas, avaliacao)
         self.progresso = progresso
         self.percent_conclusao = percent_conclusao
 

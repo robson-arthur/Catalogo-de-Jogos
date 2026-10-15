@@ -25,11 +25,11 @@ class JogoCooperativo(Jogo):
 
     participantes_frequentes: list[str]
     """
-    def __init__(self, titulo, genero, plataforma, status, horas_jogadas, max_jogadores, sessoes_coop=0, participantes_frequentes=[]):
-        super().__init__(titulo, genero, plataforma, status, horas_jogadas)
+    def __init__(self, titulo, genero, plataforma, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0, max_jogadores=0, sessoes_coop=0, participantes_frequentes=[]):
+        super().__init__(titulo, genero, plataforma, status, horas_jogadas, avaliacao)
         self._max_jogadores = max_jogadores
         self._sessoes_coop = sessoes_coop
-        self._participantes_frequentes = participantes_frequentes
+        self.participantes_frequentes = participantes_frequentes
 
     def __str__(self):
         return f"{super().__str__()} \nMáximo de jogadores: {self._max_jogadores} \nSessões coop: {self._sessoes_coop} \nParticipantes frequente: {self._participantes_frequentes}"
@@ -68,3 +68,12 @@ class JogoCooperativo(Jogo):
     @property
     def participantes_frequentes(self):
         return self._participantes_frequentes
+
+    @participantes_frequentes.setter
+    def participantes_frequentes(self, nova_lista):
+        if isinstance(nova_lista, list):
+            self._participantes_frequentes = nova_lista
+        elif isinstance(nova_lista, str):
+            copia_lista = nova_lista.split(", ")
+            self._participantes_frequentes = copia_lista
+

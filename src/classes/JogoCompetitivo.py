@@ -30,13 +30,13 @@ class JogoCompetitivo(Jogo):
 
     taxa_vit: float
     """
-    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, partidas=0, rank="SEM RANK"):
-        super().__init__(titulo, genero, plataforma, status, horas_jogadas)
+    def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0, partidas=0, vit=0, der=0, rank="SEM RANK", taxa_vit=0.0):
+        super().__init__(titulo, genero, plataforma, status, horas_jogadas, avaliacao)
         self.partidas = partidas
-        self._vit = 0
-        self._der = 0  
+        self._vit = vit
+        self._der = der  
         self.rank = rank
-        self._taxa_vit = 0.0
+        self._taxa_vit = taxa_vit
 
     def __str__(self):
         return f"{super().__str__()} \nTotal de partidas: {self._partidas} \nTotal de vitórias: {self._vit} \nTotal de derrotas: {self._der} \nRank: {self._rank} \nTaxa de vitórias: {self._taxa_vit}"

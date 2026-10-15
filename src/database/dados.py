@@ -4,12 +4,11 @@ import sys
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from src.classes.Colecao import Colecao
-from src.classes.Jogo import Jogo
 from src.classes.JogoCampanha import JogoCampanha
 from src.classes.JogoCompetitivo import JogoCompetitivo
 from src.classes.JogoCooperativo import JogoCooperativo
 from src.database.database import conectar
-from sqlite3 import Error  #permite analisar o erro caso aconteça ao tratar os dados
+from sqlite3 import Error   #permite analisar o erro caso aconteça ao tratar os dados
 
 class dados():
     """Interface que trata os métodos CRUD do banco de dados.
@@ -124,8 +123,8 @@ class dados():
 
                 conexao.commit()
 
-            except Error:
-                 print(f"Erro ao criar tabelas: {Error}")
+            except Error as e:
+                 print(f"Erro ao criar tabelas: {e}")
             finally:
                 conexao.close()
 
@@ -147,8 +146,8 @@ class dados():
                             (nova_colecao.nome_colecao, nova_colecao._numero_jogos, nova_colecao.jogos)
                     )
                     conexao.commit()
-                except Error:
-                    print(f"Erro ao adicionar Coleção: {Error}")
+                except Error as e:
+                    print(f"Erro ao adicionar Coleção: {e}")
                 finally:
                     conexao.close()
         else:
@@ -181,8 +180,8 @@ class dados():
                     )
                     
                     conexao.commit()
-                except Error:
-                    print(f"Erro ao adicionar Jogo: {Error}")
+                except Error as e:
+                    print(f"Erro ao adicionar Jogo: {e}")
                     conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
                 finally:
                     conexao.close()
@@ -215,8 +214,8 @@ class dados():
                     )
                     
                     conexao.commit()
-                except Error:
-                    print(f"Erro ao adicionar Jogo: {Error}")
+                except Error as e:
+                    print(f"Erro ao adicionar Jogo: {e}")
                     conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
                 finally:
                     conexao.close()
@@ -243,16 +242,63 @@ class dados():
                     # retorna o id do jogo que foi inserido para usar como id da subclasse
                     jogo_id = cursor.lastrowid
 
+                    copia_participantes = ", ".join(novo_jogo.participantes_frequentes)
+
                     cursor.execute(
                         "INSERT INTO jogos_cooperativos (id, max_jogadores, sessoes_coop, participantes_frequentes) VALUES (?, ?, ?, ?)",
-                        (jogo_id, novo_jogo.max_jogadores, novo_jogo.sessoes_coop, novo_jogo.participantes_frequentes)
+                        (jogo_id, novo_jogo.max_jogadores, novo_jogo.sessoes_coop, copia_participantes)
                     )
                     
                     conexao.commit()
-                except Error:
-                    print(f"Erro ao adicionar Jogo: {Error}")
+                except Error as e:
+                    print(f"Erro ao adicionar Jogo: {e}")
                     conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
                 finally:
                     conexao.close()
         else:
             raise TypeError("Tipo de jogo inválido")
+
+    def buscarJogo(self, titulo_jogo: str):
+        conexao = conectar()
+        if conexao:
+            try:
+                cursor = conexao.cursor()
+
+                query = """
+                    SELECT 
+                        j.titulo, j.genero, j.plataforma, 
+                        j.status, j.horas_jogadas, j.avaliacao,
+                        jc.progresso, jc.percent_conclusao,
+                        jcomp.partidas, jcomp.vit, jcomp.der, jcomp.rank, jcomp.taxa_vit,
+                        jcoop.max_jogadores, jcoop.sessoes_coop, jcoop.participantes_frequentes
+                    FROM jogos j
+                    LEFT JOIN jogos_campanha jc ON j.id = jc.id
+                    LEFT JOIN jogos_competitivos jcomp ON j.id = jcomp.id
+                    LEFT JOIN jogos_cooperativos jcoop ON j.id = jcoop.id
+                    WHERE j.titulo LIKE ?
+                """
+
+                # '%' para permitir buscar partes do titulo 
+                cursor.execute(query, (f"%{titulo_jogo}%",))
+                resultado = cursor.fetchone()
+
+                if not resultado:
+                    print(f"Nenhum jogo encontrado com o titulo '{titulo_jogo}'.")
+                    return None
+
+                # extraindo os dados da tupla retornada pelo SQL
+                titulo, genero, plataforma, status, horas_jogadas, avaliacao, progresso , percent_conclusao, partidas, vit, der, rank, taxa_vit, max_jogadores, sessoes_coop, participantes_frequentes = resultado
+
+                # identificando a subclasse com base em qual campo não é NULO
+                if progresso is not None:
+                    return JogoCampanha(titulo, genero, plataforma, status , horas_jogadas, avaliacao, progresso, percent_conclusao)
+                elif partidas is not None:
+                    return JogoCompetitivo(titulo, genero, plataforma, status , horas_jogadas, avaliacao, partidas, vit, der, rank, taxa_vit)
+                elif max_jogadores is not None:
+                    return JogoCooperativo(titulo, genero, plataforma, status , horas_jogadas, avaliacao, max_jogadores, sessoes_coop, participantes_frequentes)
+            except Error as e:
+                print(f"Erro ao buscar jogo: {e}")
+            finally:
+                conexao.close()
+
+
