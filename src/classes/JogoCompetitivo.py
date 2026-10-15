@@ -1,4 +1,8 @@
-from Jogo import *
+import os
+import sys
+caminho_absoluto = os.path.abspath(os.curdir)
+sys.path.insert(0, caminho_absoluto)
+from src.classes.Jogo import Jogo
 
 #subclasse de Jogo, especifico para jogos no estilo competitivo
 class JogoCompetitivo(Jogo):

@@ -1,4 +1,8 @@
-from Jogo import *
+import os
+import sys
+caminho_absoluto = os.path.abspath(os.curdir)
+sys.path.insert(0, caminho_absoluto)
+from src.classes.Jogo import Jogo
 
 class JogoCooperativo(Jogo):
     """Subclasse de Jogo para jogos no estilo cooperativo. Engloba o máximo de jogadores, as sessões cooperativas e os participantes frequentes

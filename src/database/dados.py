@@ -4,6 +4,10 @@ import sys
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from src.classes.Colecao import Colecao
+from src.classes.Jogo import Jogo
+from src.classes.JogoCampanha import JogoCampanha
+from src.classes.JogoCompetitivo import JogoCompetitivo
+from src.classes.JogoCooperativo import JogoCooperativo
 from src.database.database import conectar
 from sqlite3 import Error  #permite analisar o erro caso aconteça ao tratar os dados
 
@@ -67,12 +71,13 @@ class dados():
                         genero TEXT NOT NULL,
                         plataforma TEXT NOT NULL,
                         status TEXT NOT NULL,
-                        horas_jogadas REAL
+                        horas_jogadas REAL,
+                        avaliacao INTEGER
                         );
                 """)
                 conexao.commit()
 
-                # tabela intermediária: colecoes_jogos serve para relação de muitos para muitos
+                # tabela intermediária: colecoes_jogos serve para relação de muitos para muitos entre coleções e jogos
                 cursor.execute("""
                         CREATE TABLE IF NOT EXISTS colecoes_jogos (
                         colecao_id INTEGER,
@@ -148,3 +153,106 @@ class dados():
                     conexao.close()
         else:
             raise TypeError("Tipo de coleção inválido")
+
+    # Tratar jogos
+    def adicionarJogoCampanha(self, novo_jogo: JogoCampanha):
+        # checa se a tabela existe
+        if not self.tabela_existe("jogos"):
+            self.criarTabelasBD()
+
+        #checa se a variável é do tipo JogoCampanha
+        if isinstance(novo_jogo, JogoCampanha):
+            conexao = conectar()
+            if conexao:
+                try:
+                    cursor = conexao.cursor()
+
+                    cursor.execute(
+                        "INSERT INTO jogos (titulo, genero, plataforma, status, horas_jogadas, avaliacao) VALUES (?, ?, ?, ?, ?, ?)",
+                        (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao)
+                    )
+
+                    # retorna o id do jogo que foi inserido para usar como id da subclasse
+                    jogo_id = cursor.lastrowid
+
+                    cursor.execute(
+                        "INSERT INTO jogos_campanha (id, progresso, percent_conclusao) VALUES (?, ?, ?)",
+                        (jogo_id, novo_jogo.progresso, novo_jogo.percent_conclusao)
+                    )
+                    
+                    conexao.commit()
+                except Error:
+                    print(f"Erro ao adicionar Jogo: {Error}")
+                    conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo de jogo inválido")
+
+    def adicionarJogoCompetitivo(self, novo_jogo: JogoCompetitivo):
+        # checa se a tabela existe
+        if not self.tabela_existe("jogos"):
+            self.criarTabelasBD()
+
+        #checa se a variável é do tipo JogoCompetitivo
+        if isinstance(novo_jogo, JogoCompetitivo):
+            conexao = conectar()
+            if conexao:
+                try:
+                    cursor = conexao.cursor()
+
+                    cursor.execute(
+                        "INSERT INTO jogos (titulo, genero, plataforma, status, horas_jogadas, avaliacao) VALUES (?, ?, ?, ?, ?, ?)",
+                        (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao)
+                    )
+
+                    # retorna o id do jogo que foi inserido para usar como id da subclasse
+                    jogo_id = cursor.lastrowid
+
+                    cursor.execute(
+                        "INSERT INTO jogos_competitivos (id, partidas, vit, der, rank, taxa_vit) VALUES (?, ?, ?, ?, ?, ?)",
+                        (jogo_id, novo_jogo.partidas, novo_jogo.vit, novo_jogo.der, novo_jogo.rank, novo_jogo.taxa_vit)
+                    )
+                    
+                    conexao.commit()
+                except Error:
+                    print(f"Erro ao adicionar Jogo: {Error}")
+                    conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo de jogo inválido")
+
+    def adicionarJogoCooperativo(self, novo_jogo: JogoCooperativo):
+        # checa se a tabela existe
+        if not self.tabela_existe("jogos"):
+                self.criarTabelasBD()
+    
+        #checa se a variável é do tipo JogoCompetitivo
+        if isinstance(novo_jogo, JogoCooperativo):
+            conexao = conectar()
+            if conexao:
+                try:
+                    cursor = conexao.cursor()
+
+                    cursor.execute(
+                        "INSERT INTO jogos (titulo, genero, plataforma, status, horas_jogadas, avaliacao) VALUES (?, ?, ?, ?, ?, ?)",
+                        (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao)
+                    )
+
+                    # retorna o id do jogo que foi inserido para usar como id da subclasse
+                    jogo_id = cursor.lastrowid
+
+                    cursor.execute(
+                        "INSERT INTO jogos_cooperativos (id, max_jogadores, sessoes_coop, participantes_frequentes) VALUES (?, ?, ?, ?)",
+                        (jogo_id, novo_jogo.max_jogadores, novo_jogo.sessoes_coop, novo_jogo.participantes_frequentes)
+                    )
+                    
+                    conexao.commit()
+                except Error:
+                    print(f"Erro ao adicionar Jogo: {Error}")
+                    conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo de jogo inválido")

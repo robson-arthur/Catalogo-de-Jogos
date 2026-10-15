@@ -1,4 +1,8 @@
-from Jogo import *
+import os
+import sys
+caminho_absoluto = os.path.abspath(os.curdir)
+sys.path.insert(0, caminho_absoluto)
+from src.classes.Jogo import Jogo
 
 class JogoCampanha(Jogo):
     """Subclasse da classe pai Jogo. Engloba jogos no estilo campanha, com missões, progressos e percentual de conclusão.
