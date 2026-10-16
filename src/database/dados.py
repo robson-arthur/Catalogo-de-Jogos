@@ -22,6 +22,7 @@ class dados():
     def __init__(self):
         pass
 
+
     ## checar se a tabela existe antes de cria-lá, retorna True se existir, caso contrário retorna False
     def tabela_existe(self, nome_tabela:str):
         conexao = conectar()
@@ -39,6 +40,7 @@ class dados():
 
             ## caso o resultado não seja encontrada, a função retorna False
             return resultado is not None
+
 
     ## criar tabelas no banco de dados
     def criarTabelasBD(self):
@@ -128,8 +130,10 @@ class dados():
             finally:
                 conexao.close()
 
+
     # Tratar coleções
     def adicionarColecao(self, nova_colecao: Colecao):
+        
         # checa se a tabela existe no banco de dados
         if not self.tabela_existe("colecoes"):
             self.criarTabelasBD()
@@ -153,7 +157,26 @@ class dados():
         else:
             raise TypeError("Tipo de coleção inválido")
 
+
     # Tratar jogos
+    def adicionarJogo(self, novo_jogo):
+        if self.buscarJogo(novo_jogo.titulo):
+            jogo_achado = self.buscarJogo(novo_jogo.titulo)
+            
+            ## compara o titulo e a plataforma, se forem iguais, retorna o erro e encerra
+            if jogo_achado == novo_jogo:
+                return print(f"Jogo com mesmo título e plataforma já cadastrado")
+                
+        if isinstance(novo_jogo, JogoCampanha):
+            self.adicionarJogoCampanha(novo_jogo)
+        elif isinstance(novo_jogo, JogoCompetitivo):
+            self.adicionarJogoCompetitivo(novo_jogo)
+        elif isinstance(novo_jogo, JogoCooperativo):
+            self.adicionarJogoCooperativo(novo_jogo)
+        else:
+            raise TypeError("Tipo de jogo inválido")
+
+            
     def adicionarJogoCampanha(self, novo_jogo: JogoCampanha):
         # checa se a tabela existe
         if not self.tabela_existe("jogos"):
@@ -300,5 +323,3 @@ class dados():
                 print(f"Erro ao buscar jogo: {e}")
             finally:
                 conexao.close()
-
-
