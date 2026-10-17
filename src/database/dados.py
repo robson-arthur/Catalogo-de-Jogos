@@ -4,6 +4,7 @@ import sys
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
 from src.classes.Colecao import Colecao
+from src.classes.Jogo import Jogo
 from src.classes.JogoCampanha import JogoCampanha
 from src.classes.JogoCompetitivo import JogoCompetitivo
 from src.classes.JogoCooperativo import JogoCooperativo
@@ -25,6 +26,7 @@ class dados():
 
     ## checar se a tabela existe antes de cria-lá, retorna True se existir, caso contrário retorna False
     def tabela_existe(self, nome_tabela:str):
+
         conexao = conectar()
         if conexao:
             cursor = conexao.cursor()
@@ -44,6 +46,7 @@ class dados():
 
     ## criar tabelas no banco de dados
     def criarTabelasBD(self):
+
         conexao = conectar()
         if conexao:
             try:
@@ -160,6 +163,7 @@ class dados():
 
     # Tratar jogos
     def adicionarJogo(self, novo_jogo):
+
         if self.buscarJogo(novo_jogo.titulo):
             jogo_achado = self.buscarJogo(novo_jogo.titulo)
             
@@ -175,9 +179,9 @@ class dados():
             self.adicionarJogoCooperativo(novo_jogo)
         else:
             raise TypeError("Tipo de jogo inválido")
-
             
     def adicionarJogoCampanha(self, novo_jogo: JogoCampanha):
+
         # checa se a tabela existe
         if not self.tabela_existe("jogos"):
             self.criarTabelasBD()
@@ -212,6 +216,7 @@ class dados():
             raise TypeError("Tipo de jogo inválido")
 
     def adicionarJogoCompetitivo(self, novo_jogo: JogoCompetitivo):
+
         # checa se a tabela existe
         if not self.tabela_existe("jogos"):
             self.criarTabelasBD()
@@ -246,6 +251,7 @@ class dados():
             raise TypeError("Tipo de jogo inválido")
 
     def adicionarJogoCooperativo(self, novo_jogo: JogoCooperativo):
+
         # checa se a tabela existe
         if not self.tabela_existe("jogos"):
                 self.criarTabelasBD()
@@ -282,6 +288,7 @@ class dados():
             raise TypeError("Tipo de jogo inválido")
 
     def buscarJogo(self, titulo_jogo: str):
+
         conexao = conectar()
         if conexao:
             try:
@@ -323,3 +330,36 @@ class dados():
                 print(f"Erro ao buscar jogo: {e}")
             finally:
                 conexao.close()
+
+    def atualizarJogo(self, novo_jogo: Jogo, titulo_antigo: str):
+
+
+
+        if isinstance(novo_jogo, Jogo):
+            antigo_jogo = self.buscarJogo(titulo_antigo)
+
+
+            if not antigo_jogo:
+                return print("Jogo não encontrado")
+            
+
+            conexao = conectar()
+            if conexao:
+                try:
+
+                    cursor = conexao.cursor()
+                    cursor.execute("""
+                        UPDATE jogos
+                        SET titulo = ?, genero = ?, plataforma = ?, status = ?, horas_jogadas = ?
+                        WHERE titulo = ?
+                    """, (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, antigo_jogo.titulo))
+
+                    conexao.commit()
+                except Error as e:
+                    print(f"Erro ao atualizar jogo: {e}")
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo de jogo inválido")
+
+    

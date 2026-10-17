@@ -1,3 +1,9 @@
+import os
+import sys
+caminho_absoluto = os.path.abspath(os.curdir)
+sys.path.insert(0, caminho_absoluto)
+
+
 class Jogo():
     '''Classe pai que define os jogos a serem cadastrados. Possui os atributos comuns as subclasses JogoCampanha, JogoCooperativo e JogoCompetitivo.
 
@@ -126,3 +132,14 @@ class Jogo():
                 raise Exception("Jogo não finalizado, avaliação indisponível")
         else:
             raise TypeError("Tipo da variável da avaliação inválido")
+
+
+    #def atualizarStatus(self, titulo_jogo :str, novo_status: str):
+    #    from src.database.dados import dados
+    #    db = dados()
+    #    jogo = db.buscarJogo(titulo_jogo)
+    #
+    #   if jogo == None:
+    #       return print("Jogo não encontrado")
+    #   else:
+    #        db.atualizarJogo(jogo)
