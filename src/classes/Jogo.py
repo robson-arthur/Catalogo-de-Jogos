@@ -29,6 +29,9 @@ class Jogo():
         self._avaliacao = avaliacao
 
     def __str__(self):
+        return f"{self._titulo}, {self._genero}, {self._plataforma}, {self._status}, {self._horas_jogadas}, {self._avaliacao}"
+
+    def __repr__(self):
         return f"Nome: {self._titulo} \nGênero: {self._genero} \nPlataforma: {self._plataforma} \nStatus: {self._status} \nHoras de jogo: {self._horas_jogadas} \nAvaliação: {self._avaliacao}"
 
     def __eq__(self, other):
