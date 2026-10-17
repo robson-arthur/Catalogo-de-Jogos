@@ -39,6 +39,9 @@ class JogoCompetitivo(Jogo):
         self._taxa_vit = taxa_vit
 
     def __str__(self):
+        return f"{super().__str__()}, {self._partidas}, {self._vit}, {self._der}, {self._rank}, {self._taxa_vit}"
+
+    def __repr__(self):
         return f"{super().__str__()} \nTotal de partidas: {self._partidas} \nTotal de vitórias: {self._vit} \nTotal de derrotas: {self._der} \nRank: {self._rank} \nTaxa de vitórias: {self._taxa_vit}"
 
     def __eq__(self, other):
