@@ -134,12 +134,14 @@ class Jogo():
             raise TypeError("Tipo da variável da avaliação inválido")
 
 
-    #def atualizarStatus(self, titulo_jogo :str, novo_status: str):
-    #    from src.database.dados import dados
-    #    db = dados()
-    #    jogo = db.buscarJogo(titulo_jogo)
-    #
-    #   if jogo == None:
-    #       return print("Jogo não encontrado")
-    #   else:
-    #        db.atualizarJogo(jogo)
+    def atualizarStatus(self, titulo_jogo :str, novo_status: str):
+        from src.database.dados import dados
+        db = dados()
+        jogo = db.buscarJogo(titulo_jogo)
+        
+        if not jogo:
+           return print("Jogo não encontrado")
+
+        jogo.status = novo_status
+
+        db.atualizarJogo(jogo, jogo.titulo)

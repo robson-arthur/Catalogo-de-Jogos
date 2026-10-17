@@ -361,5 +361,3 @@ class dados():
                     conexao.close()
         else:
             raise TypeError("Tipo de jogo inválido")
-
-    
