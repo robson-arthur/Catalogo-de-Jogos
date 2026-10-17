@@ -348,14 +348,41 @@ class dados():
                 try:
 
                     cursor = conexao.cursor()
+
+                    cursor.execute("PRAGMA foreign_keys = ON;")  # habilita as classes estrangeiras
+                     
                     cursor.execute("""
                         UPDATE jogos
-                        SET titulo = ?, genero = ?, plataforma = ?, status = ?, horas_jogadas = ?
+                        SET titulo = ?, genero = ?, plataforma = ?, status = ?, horas_jogadas = ?, avaliacao = ?
                         WHERE titulo = ?
-                    """, (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, antigo_jogo.titulo))
+                    """, (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao, antigo_jogo.titulo))
 
+                    jogo_id = cursor.lastrowid
+
+                    if isinstance(novo_jogo, JogoCampanha):
+                        cursor.execute("""
+                                UPTADE jogos_campanha
+                                SET progresso = ?, percent_conclusao
+                                WHERE id = ?
+                        """, (novo_jogo.progresso, novo_jogo.percent_conclusao, jogo_id))
+                    elif isinstance(novo_jogo, JogoCompetitivo):
+                        cursor.execute("""
+                                UPTADE jogos_competitivos
+                                SET partidas = ?, vit = ?, der = ?, rank = ?, taxa_vit = ?
+                                WHERE id = ?
+                        """, (novo_jogo.partidas, novo_jogo.vit, novo_jogo.der, novo_jogo.rank, novo_jogo.taxa_vit, jogo_id))
+                    elif isinstance(novo_jogo, JogoCooperativo):
+                        cursor.execute("""
+                                UPTADE jogos_cooperativos
+                                SET max_jogadores = ?, sessoes_coop = ?, participantes_frequentes = ?
+                                WHERE id = ?
+                        """, (novo_jogo.max_jogadores, novo_jogo.sessoes_coop, novo_jogo.participantes_frequentes, jogo_id))
+                    
+                    
                     conexao.commit()
+
                 except Error as e:
+                    conexao.rollback()
                     print(f"Erro ao atualizar jogo: {e}")
                 finally:
                     conexao.close()
