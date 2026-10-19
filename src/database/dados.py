@@ -391,6 +391,8 @@ class dados():
 
     # Retorna número de jogos cadastrados e total de horas jogadas
     def relatorioSimples(self):
+
+
         conexao = conectar()
 
         if conexao:
@@ -398,15 +400,16 @@ class dados():
                 cursor = conexao.cursor()
 
                 # retorna o número total de jogos
-                cursor.execute("SELECT COUNT[*] FROM jogos;")
+                cursor.execute("SELECT COUNT(*) FROM jogos;")
                 total_jogos = cursor.fetchone()[0]
+                resultado_jogos = total_jogos if total_jogos is not None else 0   # caso não haja jogos no banco e esse valor seja NULL(ou None), ele retorna 0 e não apenas None
 
                 #retorna as horas jogadas
-                cursor.execute("SELECT SUM[horas_jogadas] FROM jogos;")
+                cursor.execute("SELECT SUM(horas_jogadas) FROM jogos;")
                 horas_totais = cursor.fetchone()[0]
                 resultado_horas = horas_totais if horas_totais is not None else 0.0   # caso não haja jogos no banco e esse valor seja NULL(ou None), ele retorna 0 e não apenas None
 
-                return total_jogos, resultado_horas
+                return resultado_jogos, resultado_horas
 
             except Error as e:
                 print(f"Erro ao retornar relatório simples: {e}")
