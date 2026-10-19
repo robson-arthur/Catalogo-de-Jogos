@@ -2,6 +2,7 @@ import os
 import sys
 caminho_absoluto = os.path.abspath(os.curdir)
 sys.path.insert(0, caminho_absoluto)
+from src.classes.Jogo import Jogo
 
 
 class Colecao():
@@ -13,13 +14,13 @@ class Colecao():
 
     numero_jogos: int
     
-    jogos: list[Jogo]
+    jogos: list[str]
     """
 
-    def __init__(self, nome_colecao: str, numero_jogos=0, jogos=""):
+    def __init__(self, nome_colecao: str, numero_jogos=0, jogos=[]):
         self.nome_colecao = nome_colecao
         self._numero_jogos = numero_jogos
-        self._jogos = jogos
+        self.jogos = jogos
 
     def __str__(self):
         return f"{self._nome_colecao}, {self._numero_jogos}, {self._jogos}"
@@ -53,3 +54,19 @@ class Colecao():
     @property
     def jogos(self):
         return f"{self._jogos}"
+
+    @jogos.setter
+    def jogos(self, novos_jogos):
+        if isinstance(novos_jogos, list):
+            self._jogos = novos_jogos
+        elif isinstance(novos_jogos, str):
+            copia_lista = novos_jogos.split(", ")
+            self._jogos = copia_lista
+        else:
+            raise TypeError("Tipo de jogos inválido(lista ou string)")
+
+    def adicionarJogo(self, novo_jogo: Jogo):
+        if isinstance(novo_jogo, Jogo):
+            self._jogos.append(novo_jogo.titulo)
+        else:
+            raise TypeError("Tipo de jogo inválido")
