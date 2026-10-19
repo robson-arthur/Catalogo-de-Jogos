@@ -19,7 +19,12 @@ Software para o Tema 4 do trabalho de Programação Orientada a Objetos do curso
 ## Estrutura de arquivos
 
 ## Decisão de design
+### Módulos
 Inicialmente, decidi implementar todas as classes em um só arquivo ```classes.py```, mas isso pareceu desorganizado, então, criei um pacote com arquivos para cada classe, incluindo um pacote para a conexão e interação com o banco de dados, ```classes/``` e ```database/``` respectivamente.
+### Banco de dados
+Para relacionar as 4 classes principais(Colecao, Jogo, JogoCampanha, JogoCompetitivo e JogoCooperativo) criei 6 tabelas, colecoes, que contém apenas as colunas nomes, número de jogos e títulos dos jogos, jogos, que contém todos os atributos principais, colecoes_jogos, que relacionam o id de uma coleção com o id de um jogo, definindo quais jogos pertencem a quais coleções, e as 3 tabelas das subclasses jogos_campanha, jogos_cooperativos e jogos_competitivos que têm seus próprio atributos e são relacionados com um id da tabela jogos.
+### Importações Locais
+Ao importar em uma classe a classe dados.py que também importava as classes principais, ocorreu um erro de importação circular, por isso, decidi importar localmente as classes dentro dos métodos e não na inicialização do arquivo da classe.
 
 ## Descrição do projeto
 Um CLI(*Command Line Interface*) usando subcomandos direto do terminal para executar os métodos necessários para o sistema atráves de um arquivo python. O sistema será usado para gerenciar um catálogo de jogos digitais, sendo possível interagir com jogos de diferentes tipos(CRUD), criar coleções de jogos, gerenciar estados dos jogos, filtrar jogos e coleções, criar relatórios personalizados e configurar o banco de dados. 
