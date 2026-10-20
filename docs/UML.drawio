@@ -67,16 +67,16 @@
           <mxGeometry height="56" width="190" y="94" as="geometry" />
         </mxCell>
         <mxCell id="WnYi_fp13twbtej9uMYm-47" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" value="dados" vertex="1">
-          <mxGeometry height="320" width="250" x="550" y="50" as="geometry" />
+          <mxGeometry height="400" width="290" x="510" y="50" as="geometry" />
         </mxCell>
         <mxCell id="WnYi_fp13twbtej9uMYm-48" parent="WnYi_fp13twbtej9uMYm-47" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="- nome_banco: str&lt;div&gt;- pasta: str&lt;/div&gt;" vertex="1">
-          <mxGeometry height="34" width="250" y="26" as="geometry" />
+          <mxGeometry height="34" width="290" y="26" as="geometry" />
         </mxCell>
         <mxCell id="WnYi_fp13twbtej9uMYm-49" parent="WnYi_fp13twbtej9uMYm-47" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" value="" vertex="1">
-          <mxGeometry height="8" width="250" y="60" as="geometry" />
+          <mxGeometry height="8" width="290" y="60" as="geometry" />
         </mxCell>
-        <mxCell id="WnYi_fp13twbtej9uMYm-50" parent="WnYi_fp13twbtej9uMYm-47" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="+ adicionarColecao(colecao: Colecao): void&lt;div&gt;+ buscarColecao(nome_colecao: str): Colecao&lt;/div&gt;&lt;div&gt;+ listarJogosColecao(nome_colecao: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ adicionarJogo(jogo: Jogo): void&lt;/div&gt;&lt;div&gt;+ buscarJogo(nome_jogo: str): Jogo&lt;/div&gt;&lt;div&gt;+ listarJogos(): list[Jogo]&lt;/div&gt;&lt;div&gt;+ listarPorGenero(genero: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ listarPorPlataforma(plataforma: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ listarPorStatus(status: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ ListarNotaMin(nota_min: int): list[Jogo]&lt;/div&gt;&lt;div&gt;+ ordenarJogos(tipo_ord: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ totalHoras(): float&lt;/div&gt;&lt;div&gt;+ statusJogos(): list[Jogo]&lt;/div&gt;&lt;div&gt;+ maisJogados(): list[Jogo]&lt;/div&gt;" vertex="1">
-          <mxGeometry height="252" width="250" y="68" as="geometry" />
+        <mxCell id="WnYi_fp13twbtej9uMYm-50" parent="WnYi_fp13twbtej9uMYm-47" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" value="&lt;div&gt;+ tabela_existe(nome_tabela: str): Bool&lt;/div&gt;&lt;div&gt;+ criarTabelas(): void&lt;/div&gt;+ adicionarColecao(colecao: Colecao): void&lt;div&gt;+ buscarColecao(nome_colecao: str): Colecao&lt;/div&gt;&lt;div&gt;+ listarJogosColecao(nome_colecao: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ adicionarJogo(jogo: Jogo): void&lt;/div&gt;&lt;div&gt;+ buscarJogo(nome_jogo: str): Jogo&lt;/div&gt;&lt;div&gt;+ atualizarJogo(novo_jogo: Jogo, titulo_antigo: str): void&lt;/div&gt;&lt;div&gt;+ listarJogos(): list[Jogo]&lt;/div&gt;&lt;div&gt;+ listarPorGenero(genero: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ listarPorPlataforma(plataforma: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ listarPorStatus(status: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ ListarNotaMin(nota_min: int): list[Jogo]&lt;/div&gt;&lt;div&gt;+ ordenarJogos(tipo_ord: str): list[Jogo]&lt;/div&gt;&lt;div&gt;+ totalHoras(): float&lt;/div&gt;&lt;div&gt;+ statusJogos(): list[Jogo]&lt;/div&gt;&lt;div&gt;+ maisJogados(): list[Jogo]&lt;/div&gt;&lt;div&gt;+ relatorioSimples(): int, float&lt;/div&gt;" vertex="1">
+          <mxGeometry height="332" width="290" y="68" as="geometry" />
         </mxCell>
         <mxCell id="WnYi_fp13twbtej9uMYm-52" edge="1" parent="1" source="WnYi_fp13twbtej9uMYm-1" style="endArrow=open;html=1;endSize=12;startArrow=diamondThin;startSize=14;startFill=0;edgeStyle=orthogonalEdgeStyle;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="WnYi_fp13twbtej9uMYm-40" value="Contém">
           <mxGeometry relative="1" as="geometry">
@@ -84,12 +84,12 @@
             <mxPoint x="200" y="360" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="WnYi_fp13twbtej9uMYm-53" connectable="0" parent="WnYi_fp13twbtej9uMYm-52" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;" value="1...n" vertex="1">
+        <mxCell id="WnYi_fp13twbtej9uMYm-53" connectable="0" parent="WnYi_fp13twbtej9uMYm-52" style="edgeLabel;resizable=0;html=1;align=left;verticalAlign=top;" value="n" vertex="1">
           <mxGeometry relative="1" x="-1" as="geometry">
             <mxPoint x="5" y="-30" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="WnYi_fp13twbtej9uMYm-54" connectable="0" parent="WnYi_fp13twbtej9uMYm-52" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=top;" value="1" vertex="1">
+        <mxCell id="WnYi_fp13twbtej9uMYm-54" connectable="0" parent="WnYi_fp13twbtej9uMYm-52" style="edgeLabel;resizable=0;html=1;align=right;verticalAlign=top;" value="n" vertex="1">
           <mxGeometry relative="1" x="1" as="geometry">
             <mxPoint x="15" as="offset" />
           </mxGeometry>
