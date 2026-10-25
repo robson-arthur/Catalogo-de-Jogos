@@ -53,7 +53,7 @@ class Colecao():
 
     @property
     def jogos(self):
-        return f"{self._jogos}"
+        return self._jogos
 
     @jogos.setter
     def jogos(self, novos_jogos):
@@ -70,3 +70,17 @@ class Colecao():
             self._jogos.append(novo_jogo.titulo)
         else:
             raise TypeError("Tipo de jogo inválido")
+
+    def removerJogo(self, jogo: Jogo):
+        if isinstance(jogo, Jogo):
+            self._jogos.remove(jogo.titulo)
+        else:
+            raise TypeError("Tipo de jogo inválido")
+
+    def listarJogos(self):
+        print("="*100)
+        print(f"Jogos de {self.nome_colecao}:")
+        print("-"*100)
+        for jogo in self.jogos:
+            print(jogo)
+        print("="*100)

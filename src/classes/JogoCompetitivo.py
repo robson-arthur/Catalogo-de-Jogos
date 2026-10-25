@@ -90,3 +90,30 @@ class JogoCompetitivo(Jogo):
     @property
     def taxa_vit(self):
         return self._taxa_vit
+
+    def registrarVit(self, quant: int):
+        if isinstance(quant, int):
+            if quant > 0:
+                self._vit += quant
+                self._partidas += quant
+            else:
+                raise Exception("Valor de vitórias inválido")
+        else:
+            raise TypeError("Tipo de vitória inválido")
+    
+    def registrarDer(self, quant: int):
+
+        if isinstance(quant, int):
+            if quant > 0:
+                self._der += quant
+                self._partidas += quant
+            else:
+                raise Exception("Valor de derrotas inválido")
+        else:
+            raise TypeError("Tipo de derrota inválido")
+
+    def calcularTaxaVit(self):
+        if self.partidas != 0:
+            self._taxa_vit = self.vit / self.partidas
+        else:
+            print("Nenhuma partida foi registrada")

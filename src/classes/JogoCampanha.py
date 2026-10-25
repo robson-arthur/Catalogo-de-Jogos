@@ -68,3 +68,24 @@ class JogoCampanha(Jogo):
         else:
             raise TypeError("Tipo da variável percentual de conclusão inválida")
     
+    def atualizarProgresso(self, progresso: int):
+
+        if isinstance(progresso, int):
+            if progresso > 0:
+                self._progresso += progresso
+            else:
+                raise Exception("Quantidade de progresso inválido")
+        else:
+            raise TypeError("Tipo de progresso inválido")
+
+    def atualizarPercentual(self, novo_percentual: float):
+        if isinstance(novo_percentual, float):
+            if novo_percentual > 0 and novo_percentual <= 100:
+                if novo_percentual > self._percent_conclusao:
+                    self._percent_conclusao = novo_percentual
+                else:
+                    raise Exception("Não é possível inserir percentual menor que o anterior")
+            else:
+                raise Exception("Valor de percentual inválido")
+        else:
+            raise TypeError("Tipo de percentual inválido")

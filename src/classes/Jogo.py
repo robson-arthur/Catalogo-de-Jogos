@@ -136,15 +136,16 @@ class Jogo():
         else:
             raise TypeError("Tipo da variável da avaliação inválido")
 
+    def registrarHoras(self, horas_jogadas: float):
+        if isinstance(horas_jogadas, float):
+            if horas_jogadas > 0:
+                self.horas_jogadas += horas_jogadas
+            else:
+                raise Exception("Quantidade de horas inválida")
+        else:
+            raise TypeError("Tipo de horas inválidas")
 
-    def atualizarStatus(self, titulo_jogo :str, novo_status: str):
-        from src.database.dados import dados
-        db = dados()
-        jogo = db.buscarJogo(titulo_jogo)
-        
-        if not jogo:
-           return print("Jogo não encontrado")
-
-        jogo.status = novo_status
-
-        db.atualizarJogo(jogo, jogo.titulo)
+    def reiniciarJogo(self):
+        self._avaliacao = 0
+        self._horas_jogadas = 0.0
+        self._status = "NÃO INICIADO"
