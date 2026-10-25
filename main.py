@@ -5,6 +5,7 @@ from src.classes.JogoCooperativo import JogoCooperativo
 from src.classes.JogoCampanha import JogoCampanha
 from src.classes.JogoCompetitivo import JogoCompetitivo
 from src.classes.Colecao import Colecao
+from src.database.dados import dados as dadosdb
 
 # biblioteca para criar a interface CLI de execução
 import argparse
@@ -54,6 +55,8 @@ def cmd_cadastrar_competitivo(args):
     print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
 def cmd_cadastrar_cooperativo(args):
+
+
     dados = {
         "titulo": args.titulo,
         "genero": args.genero,
@@ -74,6 +77,18 @@ def cmd_cadastrar_cooperativo(args):
 
     print(jogo)
     print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
+
+def cmd_listar_jogos(args):
+    dados = {
+        "genero": args.genero,
+        "plataforma": args.plataforma,
+        "status": args.status,
+        "nota_min": args.nota_min
+    }
+
+    db = dadosdb()
+
+    db.lis
 
 ## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():
@@ -107,6 +122,11 @@ def criar_parser():
         required=True
     )
 
+    listar = acoes_jogo.add_parser(
+        "listar",
+        help = "Lista todos os jogos já cadastrados"
+    )
+
     # Jogo de campanha
     campanha = tipos.add_parser("campanha")
     campanha.add_argument("-t", "--titulo", required=True)
@@ -135,6 +155,13 @@ def criar_parser():
     cooperativo.add_argument("--max_jogadores", default=0, type=int)
     cooperativo.add_argument("--participantes_frequentes", nargs="*", default=[], help="Nome dos participantes frequentes")
     cooperativo.set_defaults(func=cmd_cadastrar_cooperativo)
+
+    # Listar por Genero, plataforma, status, nota minima ou nenhum
+    listar.add_argument("--genero", default=None)
+    listar.add_argument("--plataforma", default=None)
+    listar.add_argument("--status", default=None, choices=["NÃO INICIADO", "JOGANDO", "FINALIZADO"])
+    listar.add_argument("--nota_min", default=None, choices=range(0,11), type=int)
+    listar.set_defaults(func=cmd_listar_jogos)
 
     return parser
 

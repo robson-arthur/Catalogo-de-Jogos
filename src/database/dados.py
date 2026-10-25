@@ -389,6 +389,109 @@ class dados():
         else:
             raise TypeError("Tipo de jogo inválido")
 
+
+    # Listas e ordenações
+    def listarJogos(self, genero =None, status=None, plataforma=None, nota_min=None):
+        conexao = conectar()
+
+        if conexao:
+            try:
+
+                cursor = conexao.cursor()
+
+                # Query base unindo a tabela principal e as subclasses
+                query = """
+                    SELECT 
+                        j.titulo, j.genero, j.plataforma, j.status, j.horas_jogadas, j.avaliacao,
+                        jc.progresso, jc.percent_conclusao,
+                        jcomp.partidas, jcomp.vit, jcomp.vit, jcomp.der, jcomp.rank, jcomp.taxa_vit,
+                        jcoop.max_jogadores, jcoop.sessoes_coop, jcoop.participantes_frequentes
+                    FROM jogos j
+                    LEFT JOIN jogos_campanha jc ON j.id = jc.id
+                    LEFT JOIN jogos_competitivos jcomp ON j.id = jcomp.id
+                    LEFT JOIN jogos_cooperativos jcoop ON j.id = jcoop.id
+                    WHERE 1=1
+                """
+                
+                # Lista para armazenar os parâmetros de segurança do SQL
+                parametros = []
+
+                # Adiciona filtros dinamicamente se eles foram informados
+                if genero:
+                    query += " AND j.genero LIKE ?"
+                    parametros.append(f"%{genero}%")
+
+                if plataforma:
+                    query += " AND j.plataforma LIKE ?"
+                    parametros.append(f"%{plataforma}%")
+
+                if status is not None:
+                    query += " AND j.status = ?"
+                    parametros.append(status)
+
+                if nota_min:
+                    query += " AND j.avaliacao >= ?"
+                    parametros.append(f"%{nota_min}%")
+
+                cursor.execute(query, parametros)
+                resultados = cursor.fetchall()
+                conexao.close()
+
+                jogos_instanciados = []
+
+                # Instancia os objetos corretos para cada linha retornada
+                for linha in resultados:
+                    ( titulo, genero, plataforma, status, horas_jogadas, avaliacao, progresso, percent_conclusao, partidas, vit, vit, der, rank, taxa_vit, max_jogadores, sessoes_coop, participantes_frequentes
+                    ) = linha
+
+                    # Identifica a subclasse e instancia o objeto
+                    if progresso is not None:
+                        obj = JogoCampanha(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            progresso=progresso,
+                            percent_conclusao=percent_conclusao
+                            )
+                    elif partidas is not None:
+                        obj = JogoCompetitivo(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            partidas=partidas,
+                            vit=vit,
+                            der=der,
+                            rank=rank,
+                            taxa_vit=taxa_vit
+                            )
+                    elif max_jogadores is not None:
+                        obj = JogoCooperativo(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            max_jogadores=max_jogadores,
+                            sessoes_coop=sessoes_coop,
+                            participantes_frequentes=participantes_frequentes
+                        )
+
+                    jogos_instanciados.append(obj)
+
+                return jogos_instanciados
+
+            except Error as e:
+                print(f"Erro ao listar jogos: {e}")
+            finally:
+                conexao.close()
+
     # Retorna número de jogos cadastrados e total de horas jogadas
     def relatorioSimples(self):
 
@@ -416,3 +519,10 @@ class dados():
                 conexao.rollback()
             finally:
                 conexao.close()
+
+
+if __name__ == "__main__":
+    db = dados()
+    lista = db.listarJogos(plataforma="ps3", status="FINALIZADO", nota_min=0, genero="Acç")
+    for jogo in lista:
+        print(jogo)
