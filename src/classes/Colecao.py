@@ -26,7 +26,7 @@ class Colecao():
         return f"{self._nome_colecao}, {self._numero_jogos}, {self._jogos}"
     
     def __repr__(self):
-        return f"Nome da coleção: {self._nome_colecao} \nNúmero de jogos: {self._numero_jogos} \nJogos: {self._jogos}"
+        return f"Nome da coleção: {self._nome_colecao} Número de jogos: {self._numero_jogos} Jogos: {self._jogos}"
 
     def __eq__(self, other):
         if isinstance(other, Colecao):
