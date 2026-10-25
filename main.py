@@ -16,15 +16,70 @@ def cmd_cadastrar_campanha(args):
         "titulo": args.titulo,
         "genero": args.genero,
         "plataforma": args.plataforma,
+        "horas_jogadas": args.horas_jogadas,
+        "progresso": args.progresso,
+        "percent_conclusao": args.percent_conclusao
     }
 
-    jogo = JogoCampanha(dados["titulo"], dados["genero"], dados["plataforma"])
+    jogo = JogoCampanha(
+        titulo=dados["titulo"], 
+        genero=dados["genero"], 
+        plataforma=dados["plataforma"],
+        horas_jogadas=dados["horas_jogadas"],
+        progresso=dados["progresso"],
+        percent_conclusao=dados["percent_conclusao"]
+        )
 
     print(jogo)
     print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
+def cmd_cadastrar_competitivo(args):
+    dados = {
+        "titulo": args.titulo,
+        "genero": args.genero,
+        "plataforma": args.plataforma,
+        "horas_jogadas": args.horas_jogadas,
+        "partidas": args.partidas,
+        "vit": args.vit,
+        "rank": args.rank
+    }
+    
+    jogo = JogoCompetitivo(
+        titulo=dados["titulo"], 
+        genero=dados["genero"], 
+        plataforma=dados["plataforma"],
+        horas_jogadas=dados["horas_jogadas"],
+        partidas=dados["partidas"],
+        vit=dados["vit"],
+        rank=dados["rank"]
+        )
 
-## cria o parser e adiciona os argumentos
+    print(jogo)
+    print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
+
+def cmd_cadastrar_cooperativo(args):
+    dados = {
+        "titulo": args.titulo,
+        "genero": args.genero,
+        "plataforma": args.plataforma,
+        "horas_jogadas": args.horas_jogadas,
+        "max_jogadores": args.max_jogadores,
+        "participantes_frequentes": args.participantes_frequentes
+    }
+    
+    jogo = JogoCooperativo(
+        titulo=dados["titulo"], 
+        genero=dados["genero"], 
+        plataforma=dados["plataforma"],
+        horas_jogadas=dados["horas_jogadas"],
+        max_jogadores=dados["max_jogadores"],
+        participantes_frequentes=dados["participantes_frequentes"]
+        )
+
+    print(jogo)
+    print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
+
+## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():
     parser = argparse.ArgumentParser(
         prog="Catálogo de Jogos ",
@@ -61,7 +116,29 @@ def criar_parser():
     campanha.add_argument("-t", "--titulo", required=True)
     campanha.add_argument("-g", "--genero", required=True)
     campanha.add_argument("-p", "--plataforma", required=True)
+    campanha.add_argument("-h", "--horas_jogadas", default=0.0)
+    campanha.add_argument("--progesso", default=0)
+    campanha.add_argument("--percent_conclusao", default=0.0)
     campanha.set_defaults(func=cmd_cadastrar_campanha)
+
+    # Jogo competitivo
+    competitivo = tipos.add_parser("competitivo")
+    competitivo.add_argument("-t", "--titulo", required=True)
+    competitivo.add_argument("-g", "--genero", required=True)
+    competitivo.add_argument("-p", "--plataforma", required=True)
+    competitivo.add_argument("--partidas", required=False)
+    competitivo.add_argument("--vit", required=False)
+    competitivo.add_argument("--rank", required=False)
+    campanha.set_defaults(func=cmd_cadastrar_competitivo)
+
+    # Jogo cooperativo
+    cooperativo = tipos.add_parser("cooperativo")
+    cooperativo.add_argument("-t", "--titulo", required=True)
+    cooperativo.add_argument("-g", "--genero", required=True)
+    cooperativo.add_argument("-p", "--plataforma", required=True)
+    cooperativo.add_argument("--max_jogadores", default=0)
+    cooperativo.add_argument("--participantes_frequentes", nargs="*", default=[], help="Nome dos participantes frequentes")
+    cooperativo.set_defaults(func=cmd_cadastrar_cooperativo)
 
     return parser
 
