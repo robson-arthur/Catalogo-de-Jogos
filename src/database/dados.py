@@ -9,7 +9,7 @@ from src.classes.JogoCampanha import JogoCampanha
 from src.classes.JogoCompetitivo import JogoCompetitivo
 from src.classes.JogoCooperativo import JogoCooperativo
 from src.database.database import conectar
-from sqlite3 import Error   #permite analisar o erro caso aconteça ao tratar os dados
+from sqlite3 import Error, IntegrityError   #permite analisar o erro caso aconteça ao tratar os dados
 
 class dados():
     """Interface que trata os métodos CRUD do banco de dados.
@@ -33,9 +33,10 @@ class dados():
                 try:
                     cursor = conexao.cursor()
 
+                    jogos_str = ", ".join(nova_colecao.jogos)
                     cursor.execute(
                             "INSERT INTO colecoes (nome_colecao, numero_jogos, jogos) VALUES (?, ?, ?)",
-                            (nova_colecao.nome_colecao, nova_colecao._numero_jogos, nova_colecao.jogos)
+                            (nova_colecao.nome_colecao, nova_colecao._numero_jogos, jogos_str)
                     )
                     conexao.commit()
                 except Error as e:
@@ -67,7 +68,110 @@ class dados():
                     conexao.close()
         else:
             raise TypeError("Tipo de nome de coleção inválido")
+
+    def adicionarJogoColecao(self, jogo: Jogo, colecao: Colecao):
+        conexao = conectar()
+
+        if conexao:
+            try:
+                cursor = conexao.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;")
+
+                cursor.execute("""
+                    SELECT id 
+                    FROM jogos
+                    WHERE titulo = ?
+                """, (jogo.titulo))
+                
+                jogo_id = cursor.lastrowid
+
+                cursor.execute("""
+                    SELECT id
+                    FROM colecoes
+                    WHERE nome_colecao = ?
+                """, (colecao.nome_colecao))
+
+                colecao_id = cursor.lastrowid
+                
+                # Insere a relação na tabela intermediária
+                cursor.execute("""
+                    INSERT INTO colecao_jogos (colecao_id, jogo_id)
+                    VALUES (?, ?)
+                """, (colecao_id, jogo_id))
+
+                conexao.commit()
+                print(f"Jogo {jogo.titulo} adicionado à coleção {colecao.nome_colecao} com sucesso!")
+
+            except IntegrityError as e:
+                # erro costuma acontecer se o jogo já estiver nessa coleção (por causa da Primary Key composta)
+                conexao.rollback()
+                print(f"Erro: O jogo já pertence a esta coleção: {e}")
+            except Error as e:
+                conexao.rollback()
+                print(f"Erro ao adicionar jogo a coleção: {e}")
+            finally:
+                conexao.close()
+
+
+    def buscarColecao(self, nome_colecao):
+        conexao = conectar()
+        if conexao:
+            try:
+                cursor = conexao.cursor()
+
+                cursor.execute("""
+                    SELECT nome_colecao, numero_jogos, jogos 
+                    FROM colecoes 
+                    WHERE nome_colecao LIKE ?
+                """, (f"%{nome_colecao}%",))
+
+                colecao = cursor.fetchone()
+
+                if not colecao:
+                    print(f"Nenhuma coleção com o nome: {nome_colecao} encontrado")
+                    return None
+
+                nome_colecao, numero_jogos, jogos = colecao
+
+                return Colecao(nome_colecao=nome_colecao, numero_jogos=numero_jogos, jogos=jogos)
+            
+            except Error as e:
+                print(f"Erro ao buscar coleção: {e}")
+            finally:
+                conexao.close()
+
+    def atualizarColecao(self, nova_colecao: Colecao, nome_antigo: str):
+        if isinstance(nova_colecao, Colecao):
+            antiga_colecao = self.buscarColecao(nome_antigo)
+
+            if not antiga_colecao:
+                return print("Coleção não encontrado")
         
+            conexao = conectar()
+            if conexao:
+                try:
+
+                    cursor = conexao.cursor()
+
+                    cursor.execute("PRAGMA foreign_keys = ON;")  # habilita as classes estrangeiras
+
+                    jogos_str = ", ".join(nova_colecao.jogos)
+                    
+                    cursor.execute("""
+                        UPDATE colecoes
+                        SET nome_colecao = ?, numero_jogos = ?, jogos = ?
+                        WHERE nome_colecao = ?
+                    """, (nova_colecao.nome_colecao, nova_colecao._numero_jogos, jogos_str, antiga_colecao.nome_colecao))
+
+                    conexao.commit()
+
+                except Error as e:
+                    conexao.rollback()
+                    print(f"Erro ao atualizar coleção: {e}")
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo inválido de coleção")
 
     # Tratar jogos
     def adicionarJogo(self, novo_jogo):  # retorna True caso o jogo tenha sido cadastrado, False caso já tenha um jogo com o mesmo nome e plataforma
@@ -393,4 +497,5 @@ class dados():
 
 if __name__ == "__main__":
     db = dados()
-    db.removerJogo("GTA 5")
+    col = Colecao(nome_colecao="VAL", numero_jogos=2, jogos=['gta', 'tas'])
+    db.atualizarColecao(col, 'val')
