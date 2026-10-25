@@ -37,7 +37,6 @@ def cmd_cadastrar_campanha(args):
 
     db = dadosdb()
     db.adicionarJogo(jogo)
-    print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
 def cmd_cadastrar_competitivo(args):
     dados = {
@@ -58,9 +57,6 @@ def cmd_cadastrar_competitivo(args):
 
     db = dadosdb()
     db.adicionarJogo(jogo)
-
-    print(repr(jogo))
-    print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
 def cmd_cadastrar_cooperativo(args):
 
@@ -86,9 +82,6 @@ def cmd_cadastrar_cooperativo(args):
     db = dadosdb()
     db.adicionarJogo(jogo)
 
-    print(repr(jogo))
-    print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
-
 def cmd_listar_jogos(args):
     dados = {
         "genero": args.genero,
@@ -111,6 +104,12 @@ def cmd_listar_jogos(args):
             print("-"*100)
         print()
 
+def cmd_remover_jogo(args):
+    nome_jogo = args.titulo
+
+    db = dadosdb()
+
+    db.removerJogo(nome_jogo)
 
 #colecoes
 def cmd_cadastrar_colecao(args):
@@ -122,7 +121,13 @@ def cmd_cadastrar_colecao(args):
 
     db = dadosdb()
     db.adicionarColecao(colecao)
-    print(f"Colecao '{args.nome}' cadastrado com sucesso.")
+
+def cmd_remover_colecao(args):
+    nome_colecao = args.nome_colecao
+
+    db = dadosdb()
+    db.removerColecao(nome_colecao)
+
 
 ## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():
@@ -155,6 +160,11 @@ def criar_parser():
     tipos = cadastrar_jogo.add_subparsers(
         dest="tipo",
         required=True
+    )
+
+    remover_jogo = acoes_jogo.add_parser(
+        "remover",
+        help="Remover jogo do banco de dados atráves do nome"
     )
 
     listar_jogos = acoes_jogo.add_parser(
@@ -199,6 +209,10 @@ def criar_parser():
     listar_jogos.add_argument("--nota_min", default=None, choices=range(0,11), type=int)
     listar_jogos.set_defaults(func=cmd_listar_jogos)
 
+    # remover jogo
+    remover_jogo.add_argument("--titulo", required=True)
+    remover_jogo.set_defaults(func=cmd_remover_jogo)
+
     #subcomandos de colecao
     colecao = comandos.add_parser(
         "colecao",
@@ -208,14 +222,24 @@ def criar_parser():
         dest="acao_colecao",
         required=True
     )
+
     cadastrar_colecao = acoes_colecao.add_parser(
         "cadastrar",
         help="Cadastra uma nova colecao"
     )
 
+    remover_colecao = acoes_colecao.add_parser(
+        "remover",
+        help="Remove uma coleção apartir do nome"
+    )
+
     ## cadastrar colecao
     cadastrar_colecao.add_argument("--nome", required=True)
     cadastrar_colecao.set_defaults(func=cmd_cadastrar_colecao)
+
+    # remover colecao
+    remover_colecao.add_argument("--nome_colecao", required=True)
+    remover_colecao.set_defaults(func=cmd_remover_colecao)
 
     return parser
 
