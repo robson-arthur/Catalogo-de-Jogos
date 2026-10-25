@@ -34,7 +34,7 @@ class JogoCampanha(Jogo):
         return f"{super().__str__()}, {self._progresso}, {self._percent_conclusao}"
 
     def __repr__(self):
-        return f"{super().__str__()} \nProgesso de missões/capitulos: {self._progresso} \nPercentual de conclusão: {self._percent_conclusao}"
+        return f"{super().__repr__()} Progesso de missões/capitulos: {self._progresso} Percentual de conclusão: {self._percent_conclusao}"
 
     ##usa o msm __eq__ da classe pai
     def __eq__(self, other):

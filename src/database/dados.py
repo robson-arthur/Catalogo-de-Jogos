@@ -485,6 +485,8 @@ class dados():
 
                     jogos_instanciados.append(obj)
 
+                if len(jogos_instanciados) == 0:
+                    return None
                 return jogos_instanciados
 
             except Error as e:
@@ -525,4 +527,8 @@ if __name__ == "__main__":
     db = dados()
     lista = db.listarJogos(plataforma="ps3", status="FINALIZADO", nota_min=0, genero="Acç")
     for jogo in lista:
-        print(jogo)
+        print()
+        print(f"{"Jogos":=^100}")
+        print(repr(jogo))
+        print("-"*100)
+    print()

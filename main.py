@@ -88,7 +88,17 @@ def cmd_listar_jogos(args):
 
     db = dadosdb()
 
-    db.lis
+    jogos = db.listarJogos(genero=dados["genero"], plataforma=dados["plataforma"], status=dados["status"], nota_min=dados["nota_min"])
+
+    if jogos == None:
+        print("Nenhum jogo encontrado")
+    else:
+        for jogo in jogos:
+            print()
+            print(f"{"Jogos":=^100}")
+            print(repr(jogo))
+            print("-"*100)
+        print()
 
 ## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():

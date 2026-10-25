@@ -32,7 +32,7 @@ class Jogo():
         return f"{self._titulo}, {self._genero}, {self._plataforma}, {self._status}, {self._horas_jogadas}, {self._avaliacao}"
 
     def __repr__(self):
-        return f"Nome: {self._titulo} \nGênero: {self._genero} \nPlataforma: {self._plataforma} \nStatus: {self._status} \nHoras de jogo: {self._horas_jogadas} \nAvaliação: {self._avaliacao}"
+        return f"Nome: {self._titulo} Gênero: {self._genero} Plataforma: {self._plataforma} Status: {self._status} Horas de jogo: {self._horas_jogadas} Avaliação: {self._avaliacao}"
 
     def __eq__(self, other):
         if isinstance(other, Jogo):

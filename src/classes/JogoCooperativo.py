@@ -35,7 +35,7 @@ class JogoCooperativo(Jogo):
         return f"{super().__str__()}, {self._max_jogadores}, {self._sessoes_coop}, {", ".join(self._participantes_frequentes)}"
         
     def __repr__(self):
-        return f"{super().__str__()} \nMáximo de jogadores: {self._max_jogadores} \nSessões coop: {self._sessoes_coop} \nParticipantes frequente: {", ".join(self._participantes_frequentes)}"
+        return f"{super().__repr__()} Máximo de jogadores: {self._max_jogadores} Sessões coop: {self._sessoes_coop} Participantes frequentes: {", ".join(self._participantes_frequentes)}"
 
     def __eq__(self, other):
         return super().__eq__(other)

@@ -42,7 +42,7 @@ class JogoCompetitivo(Jogo):
         return f"{super().__str__()}, {self._partidas}, {self._vit}, {self._der}, {self._rank}, {self._taxa_vit}"
 
     def __repr__(self):
-        return f"{super().__str__()} \nTotal de partidas: {self._partidas} \nTotal de vitórias: {self._vit} \nTotal de derrotas: {self._der} \nRank: {self._rank} \nTaxa de vitórias: {self._taxa_vit}"
+        return f"{super().__repr__()} Total de partidas: {self._partidas} Total de vitórias: {self._vit} Total de derrotas: {self._der} Rank: {self._rank} Taxa de vitórias: {self._taxa_vit}"
 
     def __eq__(self, other):
         return super().__eq__(other)
