@@ -12,6 +12,8 @@ import argparse
 
 
 ## funções que implementam os argumentos nos métodos do projeto
+
+#jogos
 def cmd_cadastrar_campanha(args):
     dados = {
         "titulo": args.titulo,
@@ -31,7 +33,10 @@ def cmd_cadastrar_campanha(args):
         percent_conclusao=dados["percent_conclusao"]
         )
 
-    print(jogo)
+    print(repr(jogo))
+
+    db = dadosdb()
+    db.adicionarJogo(jogo)
     print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
 def cmd_cadastrar_competitivo(args):
@@ -51,7 +56,10 @@ def cmd_cadastrar_competitivo(args):
         rank=dados["rank"]
         )
 
-    print(jogo)
+    db = dadosdb()
+    db.adicionarJogo(jogo)
+
+    print(repr(jogo))
     print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
 def cmd_cadastrar_cooperativo(args):
@@ -75,7 +83,10 @@ def cmd_cadastrar_cooperativo(args):
         participantes_frequentes=dados["participantes_frequentes"]
         )
 
-    print(jogo)
+    db = dadosdb()
+    db.adicionarJogo(jogo)
+
+    print(repr(jogo))
     print(f"Jogo '{args.titulo}' cadastrado com sucesso.")
 
 def cmd_listar_jogos(args):
@@ -100,8 +111,22 @@ def cmd_listar_jogos(args):
             print("-"*100)
         print()
 
+
+#colecoes
+def cmd_cadastrar_colecao(args):
+    nome_colecao = args.nome
+
+    colecao = Colecao(nome_colecao=nome_colecao)
+
+    print(repr(colecao))
+
+    db = dadosdb()
+    db.adicionarColecao(colecao)
+    print(f"Colecao '{args.nome}' cadastrado com sucesso.")
+
 ## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():
+    #parser principal
     parser = argparse.ArgumentParser(
         prog="Catálogo de Jogos ",
         description="Gerenciador de catálogo de jogos pessoal",
@@ -113,29 +138,30 @@ def criar_parser():
         title="entidades",
     )
 
-    
+    #subcomandos de jogo
     jogo = comandos.add_parser(
         "jogo",
         help="CRUD de Jogos",
     )
     acoes_jogo = jogo.add_subparsers(
-        dest="acao",
+        dest="acao_jogo",
         required=True,
     )
 
-    cadastrar = acoes_jogo.add_parser(
+    cadastrar_jogo = acoes_jogo.add_parser(
         "cadastrar",
         help="Cadastrar um jogo",
     )
-    tipos = cadastrar.add_subparsers(
+    tipos = cadastrar_jogo.add_subparsers(
         dest="tipo",
         required=True
     )
 
-    listar = acoes_jogo.add_parser(
+    listar_jogos = acoes_jogo.add_parser(
         "listar",
         help = "Lista todos os jogos já cadastrados"
     )
+
 
     # Jogo de campanha
     campanha = tipos.add_parser("campanha")
@@ -166,12 +192,30 @@ def criar_parser():
     cooperativo.add_argument("--participantes_frequentes", nargs="*", default=[], help="Nome dos participantes frequentes")
     cooperativo.set_defaults(func=cmd_cadastrar_cooperativo)
 
-    # Listar por Genero, plataforma, status, nota minima ou nenhum
-    listar.add_argument("--genero", default=None)
-    listar.add_argument("--plataforma", default=None)
-    listar.add_argument("--status", default=None, choices=["NÃO INICIADO", "JOGANDO", "FINALIZADO"])
-    listar.add_argument("--nota_min", default=None, choices=range(0,11), type=int)
-    listar.set_defaults(func=cmd_listar_jogos)
+    # Listar jogos por genero, plataforma, status, nota minima ou nenhum
+    listar_jogos.add_argument("--genero", default=None)
+    listar_jogos.add_argument("--plataforma", default=None)
+    listar_jogos.add_argument("--status", default=None, choices=["NÃO INICIADO", "JOGANDO", "FINALIZADO"])
+    listar_jogos.add_argument("--nota_min", default=None, choices=range(0,11), type=int)
+    listar_jogos.set_defaults(func=cmd_listar_jogos)
+
+    #subcomandos de colecao
+    colecao = comandos.add_parser(
+        "colecao",
+        help="CRUD de coleções"
+    )
+    acoes_colecao = colecao.add_subparsers(
+        dest="acao_colecao",
+        required=True
+    )
+    cadastrar_colecao = acoes_colecao.add_parser(
+        "cadastrar",
+        help="Cadastra uma nova colecao"
+    )
+
+    ## cadastrar colecao
+    cadastrar_colecao.add_argument("--nome", required=True)
+    cadastrar_colecao.set_defaults(func=cmd_cadastrar_colecao)
 
     return parser
 
