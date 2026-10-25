@@ -23,124 +23,9 @@ class dados():
     def __init__(self):
         pass
 
-
-    ## checar se a tabela existe antes de cria-lá, retorna True se existir, caso contrário retorna False
-    def tabela_existe(self, nome_tabela:str):
-
-        conexao = conectar()
-        if conexao:
-            cursor = conexao.cursor()
-            # consulta a tabela interna do SQLite
-            cursor.execute("""
-                    SELECT name FROM sqlite_master 
-                    WHERE type='table' AND name=?;
-                """, (nome_tabela,))
-            ## fetchone() retorna a linha encontrada, ou None se não achar
-            resultado = cursor.fetchone()
-
-            conexao.close()
-
-            ## caso o resultado não seja encontrada, a função retorna False
-            return resultado is not None
-
-
-    ## criar tabelas no banco de dados
-    def criarTabelasBD(self):
-
-        conexao = conectar()
-        if conexao:
-            try:
-                ## criando cursos para criar tabelas
-                cursor = conexao.cursor()
-
-                # habilita chaves estrangeiras no SQLite 
-                cursor.execute("PRAGMA foreign_keys = ON;")
-
-                # tabela de coleções: colecoes
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS colecoes (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    nome_colecao TEXT NOT NULL,
-                    numero_jogos INTEGER,
-                    jogos TEXT
-                    );
-                """)
-
-                # tabela de jogos: jogos
-                cursor = conexao.cursor()
-                cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS jogos (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        titulo TEXT NOT NULL,
-                        genero TEXT NOT NULL,
-                        plataforma TEXT NOT NULL,
-                        status TEXT NOT NULL,
-                        horas_jogadas REAL,
-                        avaliacao INTEGER
-                        );
-                """)
-                conexao.commit()
-
-                # tabela intermediária: colecoes_jogos serve para relação de muitos para muitos entre coleções e jogos
-                cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS colecoes_jogos (
-                        colecao_id INTEGER,
-                        jogo_id INTEGER,
-                        PRIMARY KEY (colecao_id, jogo_id),
-                        FOREIGN KEY (colecao_id) REFERENCES colecoes(id) ON DELETE CASCADE,
-                        FOREIGN KEY (jogo_id) REFERENCES jogos(id) ON DELETE CASCADE
-                        );
-                """)
-
-                # tabela de jogoscampanha, é relacionada com a tabela jogos pela chave primária ID: jogos_campanha
-                cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS jogos_campanha (
-                        id INTEGER PRIMARY KEY,
-                        progresso INTEGER,
-                        percent_conclusao REAL,
-                        FOREIGN KEY (id) REFERENCES jogos(id) ON DELETE CASCADE
-                        );
-                """)
-
-                #tabela de jogoscompetitivos: jogos_competitivos
-                cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS jogos_competitivos (
-                        id INTEGER PRIMARY KEY,
-                        partidas INTEGER,
-                        vit INTEGER,
-                        der INTEGER,
-                        rank TEXT,
-                        taxa_vit REAL,
-                        FOREIGN KEY (id) REFERENCES jogos(id) ON DELETE CASCADE
-                        );
-                """)
-
-                #tabela de jogoscooperativos: jogos_cooperativos
-                cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS jogos_cooperativos (
-                        id INTEGER PRIMARY KEY,
-                        max_jogadores INTEGER,
-                        sessoes_coop INTEGER,
-                        participantes_frequentes TEXT,
-                        FOREIGN KEY (id) REFERENCES jogos(id) ON DELETE CASCADE
-                        );
-                """)
-
-                conexao.commit()
-
-            except Error as e:
-                 print(f"Erro ao criar tabelas: {e}")
-            finally:
-                conexao.close()
-
-
     # Tratar coleções
     def adicionarColecao(self, nova_colecao: Colecao):
         
-        # checa se a tabela existe no banco de dados
-        if not self.tabela_existe("colecoes"):
-            self.criarTabelasBD()
-
         # checa se a variável é do tipo coleção
         if isinstance(nova_colecao, Colecao):
             conexao = conectar()
@@ -160,39 +45,53 @@ class dados():
         else:
             raise TypeError("Tipo de coleção inválido")
 
+    def removerColecao(self, nome_colecao: str):
+        if isinstance(nome_colecao, str):
+            conexao = conectar()
+            if conexao:
+                try:
+                    cursor = conexao.cursor()
+                    cursor.execute("PRAGMA foreign_keys = ON;")
+
+                    cursor.execute("DELETE FROM colecoes WHERE nome_colecao = ?", (nome_colecao,))
+                    conexao.commit()
+
+                    if cursor.rowcount > 0:
+                        print(f"Coleção {nome_colecao} foi removida")
+                    else:
+                        print(f"Nenhuma coleção encontrada com o nome {nome_colecao}.")
+                except Error as e:
+                    conexao.rollback()
+                    print(f"Erro ao remover coleção: {e}")
+                finally:
+                    conexao.close()
+        else:
+            raise TypeError("Tipo de nome de coleção inválido")
+        
 
     # Tratar jogos
-    def adicionarJogo(self, novo_jogo):
+    def adicionarJogo(self, novo_jogo):  # retorna True caso o jogo tenha sido cadastrado, False caso já tenha um jogo com o mesmo nome e plataforma
 
-        if self.buscarJogo(novo_jogo.titulo):
-            jogo_achado = self.buscarJogo(novo_jogo.titulo)
-            
-            ## compara o titulo e a plataforma, se forem iguais, retorna o erro e encerra
-            if jogo_achado == novo_jogo:
-                return print(f"Jogo com mesmo título e plataforma já cadastrado")
+        #chea o tipo da variável novo_jogo
+        if isinstance(novo_jogo, Jogo):
+
+            if self.buscarJogo(novo_jogo.titulo):
+                jogo_achado = self.buscarJogo(novo_jogo.titulo)
                 
-        if isinstance(novo_jogo, JogoCampanha):
-            self.adicionarJogoCampanha(novo_jogo)
-        elif isinstance(novo_jogo, JogoCompetitivo):
-            self.adicionarJogoCompetitivo(novo_jogo)
-        elif isinstance(novo_jogo, JogoCooperativo):
-            self.adicionarJogoCooperativo(novo_jogo)
-        else:
-            raise TypeError("Tipo de jogo inválido")
-            
-    def adicionarJogoCampanha(self, novo_jogo: JogoCampanha):
+                ## compara o titulo e a plataforma, se forem iguais, retorna o erro e encerra
+                if jogo_achado == novo_jogo:
+                    print(f"Jogo '{novo_jogo.titulo} e plataforma {novo_jogo.plataforma} já cadastrado.")
 
-        # checa se a tabela existe
-        if not self.tabela_existe("jogos"):
-            self.criarTabelasBD()
-
-        #checa se a variável é do tipo JogoCampanha
-        if isinstance(novo_jogo, JogoCampanha):
             conexao = conectar()
+
             if conexao:
                 try:
+
                     cursor = conexao.cursor()
 
+                    # habilita as chaves secundárias
+                    cursor.execute("PRAGMA foreign_keys = ON;")
+                    
                     cursor.execute(
                         "INSERT INTO jogos (titulo, genero, plataforma, status, horas_jogadas, avaliacao) VALUES (?, ?, ?, ?, ?, ?)",
                         (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao)
@@ -201,92 +100,66 @@ class dados():
                     # retorna o id do jogo que foi inserido para usar como id da subclasse
                     jogo_id = cursor.lastrowid
 
-                    cursor.execute(
-                        "INSERT INTO jogos_campanha (id, progresso, percent_conclusao) VALUES (?, ?, ?)",
-                        (jogo_id, novo_jogo.progresso, novo_jogo.percent_conclusao)
-                    )
-                    
+                    # checa para qual tabela de subclasse os dados serão enviado e relacionados
+                    if isinstance(novo_jogo, JogoCampanha):
+
+                        cursor.execute(
+                            "INSERT INTO jogos_campanha (id, progresso, percent_conclusao) VALUES (?, ?, ?)",
+                            (jogo_id, novo_jogo.progresso, novo_jogo.percent_conclusao)
+                        )
+                        
+                    elif isinstance(novo_jogo, JogoCompetitivo):
+
+                        cursor.execute(
+                            "INSERT INTO jogos_competitivos (id, partidas, vit, der, rank, taxa_vit) VALUES (?, ?, ?, ?, ?, ?)",
+                            (jogo_id, novo_jogo.partidas, novo_jogo.vit, novo_jogo.der, novo_jogo.rank, novo_jogo.taxa_vit)
+                        )
+                        
+                    elif isinstance(novo_jogo, JogoCooperativo):
+
+                        # cria str apartir da lista do atributo participantes_frequentes
+                        copia_participantes = ", ".join(novo_jogo.participantes_frequentes)
+
+                        cursor.execute(
+                            "INSERT INTO jogos_cooperativos (id, max_jogadores, sessoes_coop, participantes_frequentes) VALUES (?, ?, ?, ?)",
+                            (jogo_id, novo_jogo.max_jogadores, novo_jogo.sessoes_coop, copia_participantes)
+                        )
+
                     conexao.commit()
+                    print(f"Jogo {novo_jogo.titulo} cadastrado com sucesso")
+                    
                 except Error as e:
-                    print(f"Erro ao adicionar Jogo: {e}")
-                    conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
+                    print(f"Erro ao cadastrar jogo: {e}")
+                    conexao.rollback()
                 finally:
                     conexao.close()
         else:
             raise TypeError("Tipo de jogo inválido")
 
-    def adicionarJogoCompetitivo(self, novo_jogo: JogoCompetitivo):
-
-        # checa se a tabela existe
-        if not self.tabela_existe("jogos"):
-            self.criarTabelasBD()
-
-        #checa se a variável é do tipo JogoCompetitivo
-        if isinstance(novo_jogo, JogoCompetitivo):
+    def removerJogo(self, nome_jogo):
+        if isinstance(nome_jogo, str):
             conexao = conectar()
             if conexao:
                 try:
                     cursor = conexao.cursor()
+                    cursor.execute("PRAGMA foreign_keys = ON;")
 
-                    cursor.execute(
-                        "INSERT INTO jogos (titulo, genero, plataforma, status, horas_jogadas, avaliacao) VALUES (?, ?, ?, ?, ?, ?)",
-                        (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao)
-                    )
-
-                    # retorna o id do jogo que foi inserido para usar como id da subclasse
-                    jogo_id = cursor.lastrowid
-
-                    cursor.execute(
-                        "INSERT INTO jogos_competitivos (id, partidas, vit, der, rank, taxa_vit) VALUES (?, ?, ?, ?, ?, ?)",
-                        (jogo_id, novo_jogo.partidas, novo_jogo.vit, novo_jogo.der, novo_jogo.rank, novo_jogo.taxa_vit)
-                    )
-                    
+                    cursor.execute("DELETE FROM jogos WHERE titulo = ?", (nome_jogo,))
                     conexao.commit()
+
+                    if cursor.rowcount > 0:
+                        print(f"Jogo {nome_jogo} foi removido")
+                    else:
+                        print(f"Nenhum jogo encontrado com o titulo {nome_jogo}.")
+
                 except Error as e:
-                    print(f"Erro ao adicionar Jogo: {e}")
-                    conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
+                    conexao.rollback()
+                    print(f"Erro ao remover coleção: {e}")
                 finally:
                     conexao.close()
         else:
-            raise TypeError("Tipo de jogo inválido")
-
-    def adicionarJogoCooperativo(self, novo_jogo: JogoCooperativo):
-
-        # checa se a tabela existe
-        if not self.tabela_existe("jogos"):
-                self.criarTabelasBD()
-    
-        #checa se a variável é do tipo JogoCompetitivo
-        if isinstance(novo_jogo, JogoCooperativo):
-            conexao = conectar()
-            if conexao:
-                try:
-                    cursor = conexao.cursor()
-
-                    cursor.execute(
-                        "INSERT INTO jogos (titulo, genero, plataforma, status, horas_jogadas, avaliacao) VALUES (?, ?, ?, ?, ?, ?)",
-                        (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao)
-                    )
-
-                    # retorna o id do jogo que foi inserido para usar como id da subclasse
-                    jogo_id = cursor.lastrowid
-
-                    copia_participantes = ", ".join(novo_jogo.participantes_frequentes)
-
-                    cursor.execute(
-                        "INSERT INTO jogos_cooperativos (id, max_jogadores, sessoes_coop, participantes_frequentes) VALUES (?, ?, ?, ?)",
-                        (jogo_id, novo_jogo.max_jogadores, novo_jogo.sessoes_coop, copia_participantes)
-                    )
+            raise TypeError("Tipo de nome de jogo inválido")
                     
-                    conexao.commit()
-                except Error as e:
-                    print(f"Erro ao adicionar Jogo: {e}")
-                    conexao.rollback()   #desfaz alterações com o cursor caso apareça erros
-                finally:
-                    conexao.close()
-        else:
-            raise TypeError("Tipo de jogo inválido")
-
     def buscarJogo(self, titulo_jogo: str):
 
         conexao = conectar()
@@ -333,16 +206,12 @@ class dados():
 
     def atualizarJogo(self, novo_jogo: Jogo, titulo_antigo: str):
 
-
-
         if isinstance(novo_jogo, Jogo):
             antigo_jogo = self.buscarJogo(titulo_antigo)
-
 
             if not antigo_jogo:
                 return print("Jogo não encontrado")
             
-
             conexao = conectar()
             if conexao:
                 try:
@@ -388,7 +257,6 @@ class dados():
                     conexao.close()
         else:
             raise TypeError("Tipo de jogo inválido")
-
 
     # Listas e ordenações
     def listarJogos(self, genero =None, status=None, plataforma=None, nota_min=None):
@@ -525,10 +393,4 @@ class dados():
 
 if __name__ == "__main__":
     db = dados()
-    lista = db.listarJogos(plataforma="ps3", status="FINALIZADO", nota_min=0, genero="Acç")
-    for jogo in lista:
-        print()
-        print(f"{"Jogos":=^100}")
-        print(repr(jogo))
-        print("-"*100)
-    print()
+    db.removerJogo("GTA 5")
