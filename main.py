@@ -39,8 +39,6 @@ def cmd_cadastrar_competitivo(args):
         "genero": args.genero,
         "plataforma": args.plataforma,
         "horas_jogadas": args.horas_jogadas,
-        "partidas": args.partidas,
-        "vit": args.vit,
         "rank": args.rank
     }
     
@@ -49,8 +47,6 @@ def cmd_cadastrar_competitivo(args):
         genero=dados["genero"], 
         plataforma=dados["plataforma"],
         horas_jogadas=dados["horas_jogadas"],
-        partidas=dados["partidas"],
-        vit=dados["vit"],
         rank=dados["rank"]
         )
 
@@ -116,9 +112,9 @@ def criar_parser():
     campanha.add_argument("-t", "--titulo", required=True)
     campanha.add_argument("-g", "--genero", required=True)
     campanha.add_argument("-p", "--plataforma", required=True)
-    campanha.add_argument("-h", "--horas_jogadas", default=0.0)
-    campanha.add_argument("--progesso", default=0)
-    campanha.add_argument("--percent_conclusao", default=0.0)
+    campanha.add_argument("-hj", "--horas_jogadas", default=0.0, type=float)
+    campanha.add_argument("--progresso", default=0, type=int)
+    campanha.add_argument("--percent_conclusao", default=0.0, type=float)
     campanha.set_defaults(func=cmd_cadastrar_campanha)
 
     # Jogo competitivo
@@ -126,17 +122,17 @@ def criar_parser():
     competitivo.add_argument("-t", "--titulo", required=True)
     competitivo.add_argument("-g", "--genero", required=True)
     competitivo.add_argument("-p", "--plataforma", required=True)
-    competitivo.add_argument("--partidas", required=False)
-    competitivo.add_argument("--vit", required=False)
-    competitivo.add_argument("--rank", required=False)
-    campanha.set_defaults(func=cmd_cadastrar_competitivo)
+    competitivo.add_argument("-hj", "--horas_jogadas", default=0.0, type=float)
+    competitivo.add_argument("--rank", default="SEM RANK")
+    competitivo.set_defaults(func=cmd_cadastrar_competitivo)
 
     # Jogo cooperativo
     cooperativo = tipos.add_parser("cooperativo")
     cooperativo.add_argument("-t", "--titulo", required=True)
     cooperativo.add_argument("-g", "--genero", required=True)
     cooperativo.add_argument("-p", "--plataforma", required=True)
-    cooperativo.add_argument("--max_jogadores", default=0)
+    cooperativo.add_argument("-hj", "--horas_jogadas", default=0.0, type=float)
+    cooperativo.add_argument("--max_jogadores", default=0, type=int)
     cooperativo.add_argument("--participantes_frequentes", nargs="*", default=[], help="Nome dos participantes frequentes")
     cooperativo.set_defaults(func=cmd_cadastrar_cooperativo)
 
