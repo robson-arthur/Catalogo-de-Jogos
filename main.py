@@ -128,6 +128,30 @@ def cmd_remover_colecao(args):
     db = dadosdb()
     db.removerColecao(nome_colecao)
 
+def cmd_adicionarJogo_colecao(args):
+    nome_colecao = args.nome_colecao
+    nome_jogo = args.nome_jogo
+
+    db = dadosdb()
+    
+    jogo =db.buscarJogo(nome_jogo)
+
+    if not jogo:
+        return print("Jogo não encontrado")
+
+    col = db.buscarColecao(nome_colecao)
+
+    if not col:
+        return print("Colecao não encontrada")
+
+    
+    resultado = db.adicionarJogoColecao(jogo,col) #caso o jogo já exista na coleção, retorna o erro e não executa
+
+    if resultado:
+        db.atualizarColecao(col, col.nome_colecao)
+
+        col.adicionarJogo(jogo)
+    
 
 ## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():
@@ -143,7 +167,9 @@ def criar_parser():
         title="entidades",
     )
 
-    #subcomandos de jogo
+    # --------------------------------
+    #    subcomandos de jogo
+    # --------------------------------
     jogo = comandos.add_parser(
         "jogo",
         help="CRUD de Jogos",
@@ -213,7 +239,10 @@ def criar_parser():
     remover_jogo.add_argument("--titulo", required=True)
     remover_jogo.set_defaults(func=cmd_remover_jogo)
 
-    #subcomandos de colecao
+
+    # --------------------------------
+    #     subcomandos de colecao
+    # --------------------------------
     colecao = comandos.add_parser(
         "colecao",
         help="CRUD de coleções"
@@ -233,6 +262,11 @@ def criar_parser():
         help="Remove uma coleção apartir do nome"
     )
 
+    adicionarJogo_colecao = acoes_colecao.add_parser(
+        "adicionarJogo",
+        help="Adiciona um jogo a uma coleção atráves dos nomes"
+    )
+
     ## cadastrar colecao
     cadastrar_colecao.add_argument("--nome", required=True)
     cadastrar_colecao.set_defaults(func=cmd_cadastrar_colecao)
@@ -240,6 +274,11 @@ def criar_parser():
     # remover colecao
     remover_colecao.add_argument("--nome_colecao", required=True)
     remover_colecao.set_defaults(func=cmd_remover_colecao)
+
+    #adicionarJogo_colecao
+    adicionarJogo_colecao.add_argument("--nome_colecao", required=True)
+    adicionarJogo_colecao.add_argument("--nome_jogo", required=True)
+    adicionarJogo_colecao.set_defaults(func=cmd_adicionarJogo_colecao)
 
     return parser
 

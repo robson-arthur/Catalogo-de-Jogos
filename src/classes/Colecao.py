@@ -20,7 +20,7 @@ class Colecao():
     def __init__(self, nome_colecao: str, numero_jogos=0, jogos=[]):
         self.nome_colecao = nome_colecao
         self._numero_jogos = numero_jogos
-        self.jogos = jogos
+        self._jogos = jogos
 
     def __str__(self):
         return f"{self._nome_colecao}, {self._numero_jogos}, {self._jogos}"

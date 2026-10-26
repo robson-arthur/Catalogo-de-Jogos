@@ -33,14 +33,19 @@ class dados():
                 try:
                     cursor = conexao.cursor()
 
-                    jogos_str = ", ".join(nova_colecao.jogos)
+                    
                     cursor.execute(
                             "INSERT INTO colecoes (nome_colecao, numero_jogos, jogos) VALUES (?, ?, ?)",
-                            (nova_colecao.nome_colecao, nova_colecao._numero_jogos, jogos_str)
+                            (nova_colecao.nome_colecao, nova_colecao._numero_jogos, None)
                     )
                     conexao.commit()
+                    
+                    print(f"Coleção {nova_colecao.nome_colecao} adicionada com sucesso")
+
+                    return True
                 except Error as e:
                     print(f"Erro ao adicionar Coleção: {e}")
+                    return False
                 finally:
                     conexao.close()
         else:
@@ -59,11 +64,15 @@ class dados():
 
                     if cursor.rowcount > 0:
                         print(f"Coleção {nome_colecao} foi removida")
+                        return True
                     else:
                         print(f"Nenhuma coleção encontrada com o nome {nome_colecao}.")
+                        return False
+
                 except Error as e:
                     conexao.rollback()
                     print(f"Erro ao remover coleção: {e}")
+                    return False
                 finally:
                     conexao.close()
         else:
@@ -80,38 +89,40 @@ class dados():
                 cursor.execute("""
                     SELECT id 
                     FROM jogos
-                    WHERE titulo = ?
-                """, (jogo.titulo))
+                    WHERE titulo = ?;
+                """, (jogo.titulo,))
                 
-                jogo_id = cursor.lastrowid
+                jogo_id = cursor.fetchone()[0]
 
                 cursor.execute("""
                     SELECT id
                     FROM colecoes
-                    WHERE nome_colecao = ?
-                """, (colecao.nome_colecao))
+                    WHERE nome_colecao = ?;
+                """, (colecao.nome_colecao,))
 
-                colecao_id = cursor.lastrowid
+                colecao_id = cursor.fetchone()[0]
                 
                 # Insere a relação na tabela intermediária
                 cursor.execute("""
-                    INSERT INTO colecao_jogos (colecao_id, jogo_id)
-                    VALUES (?, ?)
+                    INSERT INTO colecoes_jogos (colecao_id, jogo_id)
+                    VALUES (?, ?);
                 """, (colecao_id, jogo_id))
 
                 conexao.commit()
                 print(f"Jogo {jogo.titulo} adicionado à coleção {colecao.nome_colecao} com sucesso!")
 
+                return True
+
             except IntegrityError as e:
                 # erro costuma acontecer se o jogo já estiver nessa coleção (por causa da Primary Key composta)
                 conexao.rollback()
                 print(f"Erro: O jogo já pertence a esta coleção: {e}")
+                return False
             except Error as e:
                 conexao.rollback()
                 print(f"Erro ao adicionar jogo a coleção: {e}")
             finally:
                 conexao.close()
-
 
     def buscarColecao(self, nome_colecao):
         conexao = conectar()
@@ -155,7 +166,10 @@ class dados():
 
                     cursor.execute("PRAGMA foreign_keys = ON;")  # habilita as classes estrangeiras
 
-                    jogos_str = ", ".join(nova_colecao.jogos)
+                    if len(nova_colecao.jogos) > 0:
+                        jogos_str = ", ".join(nova_colecao.jogos)
+                    else:
+                        jogos_str = None
                     
                     cursor.execute("""
                         UPDATE colecoes
@@ -184,7 +198,7 @@ class dados():
                 
                 ## compara o titulo e a plataforma, se forem iguais, retorna o erro e encerra
                 if jogo_achado == novo_jogo:
-                    print(f"Jogo '{novo_jogo.titulo} e plataforma {novo_jogo.plataforma} já cadastrado.")
+                    return print(f"Jogo '{novo_jogo.titulo} e plataforma {novo_jogo.plataforma} já cadastrado.")
 
             conexao = conectar()
 
@@ -497,5 +511,17 @@ class dados():
 
 if __name__ == "__main__":
     db = dados()
-    col = Colecao(nome_colecao="VAL", numero_jogos=2, jogos=['gta', 'tas'])
-    db.atualizarColecao(col, 'val')
+    jogo = db.buscarJogo("Ori")
+    col = db.buscarColecao("Favoritos")
+
+    if jogo and col:
+
+
+        db.adicionarJogoColecao(jogo,col)
+
+        db.atualizarColecao(col, col.nome_colecao)
+
+        print(jogo)
+        print(col)
+
+    
