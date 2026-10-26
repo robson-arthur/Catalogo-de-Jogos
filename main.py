@@ -111,6 +111,26 @@ def cmd_remover_jogo(args):
 
     db.removerJogo(nome_jogo)
 
+def cmd_status(args):
+    nome_jogo = args.nome_jogo
+    novo_status = args.status
+
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if jogo:
+        if jogo.status == novo_status:
+            return print("Erro na alteração, status igual ao anterior")
+
+        jogo.status = novo_status
+
+        resultado = db.atualizarJogo(jogo, jogo.titulo)
+        if resultado:
+            print("Status atualizado")
+
+        
+
 #colecoes
 def cmd_cadastrar_colecao(args):
     nome_colecao = args.nome
@@ -133,8 +153,8 @@ def cmd_adicionarJogo_colecao(args):
     nome_jogo = args.nome_jogo
 
     db = dadosdb()
-    
-    jogo =db.buscarJogo(nome_jogo)
+
+    jogo = db.buscarJogo(nome_jogo)
 
     if not jogo:
         return print("Jogo não encontrado")
@@ -148,9 +168,9 @@ def cmd_adicionarJogo_colecao(args):
     resultado = db.adicionarJogoColecao(jogo,col) #caso o jogo já exista na coleção, retorna o erro e não executa
 
     if resultado:
+        col.adicionarJogo(jogo)
         db.atualizarColecao(col, col.nome_colecao)
 
-        col.adicionarJogo(jogo)
     
 
 ## cria o parser e adiciona os argumentos e subparsers
@@ -198,6 +218,11 @@ def criar_parser():
         help = "Lista todos os jogos já cadastrados"
     )
 
+    status = acoes_jogo.add_parser(
+        "status",
+        help="Adiciona um novo status a um jogo"
+    )
+
 
     # Jogo de campanha
     campanha = tipos.add_parser("campanha")
@@ -238,6 +263,11 @@ def criar_parser():
     # remover jogo
     remover_jogo.add_argument("--titulo", required=True)
     remover_jogo.set_defaults(func=cmd_remover_jogo)
+
+    #status
+    status.add_argument("--nome_jogo", required=True)
+    status.add_argument("--status", required=True, choices=["NÃO INICIADO", "JOGANDO", "FINALIZADO"])
+    status.set_defaults(func=cmd_status)
 
 
     # --------------------------------

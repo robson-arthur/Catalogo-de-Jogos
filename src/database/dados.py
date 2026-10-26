@@ -198,7 +198,8 @@ class dados():
                 
                 ## compara o titulo e a plataforma, se forem iguais, retorna o erro e encerra
                 if jogo_achado == novo_jogo:
-                    return print(f"Jogo '{novo_jogo.titulo} e plataforma {novo_jogo.plataforma} já cadastrado.")
+                    print(f"Jogo '{novo_jogo.titulo} e plataforma {novo_jogo.plataforma} já cadastrado.")
+                    return False
 
             conexao = conectar()
 
@@ -245,10 +246,12 @@ class dados():
 
                     conexao.commit()
                     print(f"Jogo {novo_jogo.titulo} cadastrado com sucesso")
+                    return True
                     
                 except Error as e:
                     print(f"Erro ao cadastrar jogo: {e}")
                     conexao.rollback()
+                    return False
                 finally:
                     conexao.close()
         else:
@@ -267,12 +270,15 @@ class dados():
 
                     if cursor.rowcount > 0:
                         print(f"Jogo {nome_jogo} foi removido")
+                        return True
                     else:
                         print(f"Nenhum jogo encontrado com o titulo {nome_jogo}.")
+                        return False
 
                 except Error as e:
                     conexao.rollback()
                     print(f"Erro ao remover coleção: {e}")
+                    return False
                 finally:
                     conexao.close()
         else:
@@ -319,6 +325,7 @@ class dados():
                     return JogoCooperativo(titulo, genero, plataforma, status , horas_jogadas, avaliacao, max_jogadores, sessoes_coop, participantes_frequentes)
             except Error as e:
                 print(f"Erro ao buscar jogo: {e}")
+                return None
             finally:
                 conexao.close()
 
@@ -328,7 +335,8 @@ class dados():
             antigo_jogo = self.buscarJogo(titulo_antigo)
 
             if not antigo_jogo:
-                return print("Jogo não encontrado")
+                print("Jogo não encontrado")
+                return False
             
             conexao = conectar()
             if conexao:
@@ -337,40 +345,64 @@ class dados():
                     cursor = conexao.cursor()
 
                     cursor.execute("PRAGMA foreign_keys = ON;")  # habilita as classes estrangeiras
+
+                    # checa se já existem 3 jogos com o status JOGANDO caso atualize o status
+                    if novo_jogo.status == "JOGANDO" and antigo_jogo.status != "JOGANDO":
+                        cursor.execute("""
+                            SELECT COUNT(*) 
+                            FROM jogos 
+                            WHERE status = ?
+                        """, ("JOGANDO",))
+
+                        total_jogando = cursor.fetchone()[0]
+
+                        if total_jogando == 3:
+                            print("Mais de 3 jogos com o status jogando. Falha em atualizar status")
+                            return False
+                    
                      
                     cursor.execute("""
-                        UPDATE jogos
-                        SET titulo = ?, genero = ?, plataforma = ?, status = ?, horas_jogadas = ?, avaliacao = ?
-                        WHERE titulo = ?
+                            UPDATE jogos
+                            SET titulo = ?, genero = ?, plataforma = ?, status = ?, horas_jogadas = ?, avaliacao = ?
+                            WHERE titulo = ?
                     """, (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao, antigo_jogo.titulo))
 
                     jogo_id = cursor.lastrowid
 
+
                     if isinstance(novo_jogo, JogoCampanha):
                         cursor.execute("""
-                                UPTADE jogos_campanha
-                                SET progresso = ?, percent_conclusao
+                                UPDATE jogos_campanha
+                                SET progresso = ?, percent_conclusao = ?
                                 WHERE id = ?
                         """, (novo_jogo.progresso, novo_jogo.percent_conclusao, jogo_id))
                     elif isinstance(novo_jogo, JogoCompetitivo):
                         cursor.execute("""
-                                UPTADE jogos_competitivos
+                                UPDATE jogos_competitivos
                                 SET partidas = ?, vit = ?, der = ?, rank = ?, taxa_vit = ?
                                 WHERE id = ?
                         """, (novo_jogo.partidas, novo_jogo.vit, novo_jogo.der, novo_jogo.rank, novo_jogo.taxa_vit, jogo_id))
                     elif isinstance(novo_jogo, JogoCooperativo):
+                        if len(novo_jogo.participantes_frequentes) > 0:
+                            part_str = ", ".join(novo_jogo.participantes_frequentes)
+                        else:
+                            part_str = None
+
                         cursor.execute("""
-                                UPTADE jogos_cooperativos
+                                UPDATE jogos_cooperativos
                                 SET max_jogadores = ?, sessoes_coop = ?, participantes_frequentes = ?
                                 WHERE id = ?
-                        """, (novo_jogo.max_jogadores, novo_jogo.sessoes_coop, novo_jogo.participantes_frequentes, jogo_id))
+                        """, (novo_jogo.max_jogadores, novo_jogo.sessoes_coop, part_str, jogo_id))
                     
                     
                     conexao.commit()
+                    
+                    return True
 
                 except Error as e:
                     conexao.rollback()
                     print(f"Erro ao atualizar jogo: {e}")
+                    return False
                 finally:
                     conexao.close()
         else:
@@ -483,7 +515,6 @@ class dados():
     # Retorna número de jogos cadastrados e total de horas jogadas
     def relatorioSimples(self):
 
-
         conexao = conectar()
 
         if conexao:
@@ -498,13 +529,14 @@ class dados():
                 #retorna as horas jogadas
                 cursor.execute("SELECT SUM(horas_jogadas) FROM jogos;")
                 horas_totais = cursor.fetchone()[0]
-                resultado_horas = horas_totais if horas_totais is not None else 0.0   # caso não haja jogos no banco e esse valor seja NULL(ou None), ele retorna 0 e não apenas None
+                resultado_horas = horas_totais if horas_totais is not None else 0.0   # caso não haja jogos no banco e esse valor seja NULL(ou None), ele retorna 0.0 e não apenas None
 
                 return resultado_jogos, resultado_horas
 
             except Error as e:
                 print(f"Erro ao retornar relatório simples: {e}")
                 conexao.rollback()
+                return False
             finally:
                 conexao.close()
 

@@ -50,8 +50,8 @@ class Jogo():
         if isinstance(novo_titulo, str):
             if len(novo_titulo) == 0:
                 raise Exception("Título vazio inválido")
-            elif len(novo_titulo) > 20:                                   ## maior número de caracteres é 20
-                raise Exception("Título com mais de 20 caracteres")
+            elif len(novo_titulo) > 40:                                   ## maior número de caracteres é 20
+                raise Exception("Título com mais de 40 caracteres")
             else:
                 self._titulo = novo_titulo
         else:
