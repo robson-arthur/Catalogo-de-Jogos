@@ -19,6 +19,8 @@ class JogoCampanha(Jogo):
 
     horas_jogadas: float
 
+    avaliacao: int
+
     progresso: int
 
     percent_conclusao: float
@@ -79,6 +81,7 @@ class JogoCampanha(Jogo):
             raise TypeError("Tipo de progresso inválido")
 
     def atualizarPercentual(self, novo_percentual: float):
+
         if isinstance(novo_percentual, float):
             if novo_percentual > 0 and novo_percentual <= 100:
                 if novo_percentual > self._percent_conclusao:
@@ -89,3 +92,8 @@ class JogoCampanha(Jogo):
                 raise Exception("Valor de percentual inválido")
         else:
             raise TypeError("Tipo de percentual inválido")
+
+    def reiniciarJogo(self):
+        super().reiniciarJogo()
+        self._progresso = 0
+        self._percent_conclusao = 0

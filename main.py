@@ -128,8 +128,46 @@ def cmd_status(args):
         resultado = db.atualizarJogo(jogo, jogo.titulo)
         if resultado:
             print("Status atualizado")
+    else:
+        print("Jogo não encontrado")
 
-        
+def cmd_horas(args):
+    nome_jogo = args.nome_jogo
+    horas = args.horas
+
+    if horas <= 0:
+        raise argparse.ArgumentTypeError("As horas jogadas não podem ser negativas ou iguais a zero")
+    
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if jogo:
+
+        jogo.registrarHoras(horas)
+
+        resultado = db.atualizarJogo(jogo, jogo.titulo)
+        if resultado:
+            print("Horas registradas")
+    else:
+        print("Jogo não encontrado")
+
+def cmd_reiniciar(args):
+    nome_jogo = args.nome_jogo
+
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if jogo:
+        jogo.reiniciarJogo()
+
+        resultado = db.atualizarJogo(jogo, jogo.titulo)
+        if resultado:
+            print("Jogo reiniciado")
+    else:
+        print("Jogo não encontrado")
+
 
 #colecoes
 def cmd_cadastrar_colecao(args):
@@ -170,6 +208,7 @@ def cmd_adicionarJogo_colecao(args):
     if not col:
         return print("Colecao não encontrada")
 
+    
     
     resultado = db.adicionarJogoColecao(jogo,col) #caso o jogo já exista na coleção, retorna o erro e não executa
 
@@ -276,6 +315,14 @@ def criar_parser():
         "status",
         help="Adiciona um novo status a um jogo"
     )
+    horas = acoes_jogo.add_parser(
+        "horas_jogadas",
+        help="Registra horas jogadas"
+    )
+    reiniciar = acoes_jogo.add_parser(
+        "reiniciar",
+        help="Reseta todas as informações de um jogo(exceto nome, plataforma, genêro e max_jogadores se aplicável)"
+    )
 
 
     # Jogo de campanha
@@ -323,6 +370,14 @@ def criar_parser():
     status.add_argument("--status", required=True, choices=["NÃO INICIADO", "JOGANDO", "FINALIZADO"])
     status.set_defaults(func=cmd_status)
 
+    #horas_jogadas
+    horas.add_argument("--nome_jogo", required=True)
+    horas.add_argument("--horas", type=float)
+    horas.set_defaults(func=cmd_horas)
+
+    #reiniciar
+    reiniciar.add_argument("--nome_jogo", required=True)
+    reiniciar.set_defaults(func=cmd_reiniciar)
 
     # --------------------------------
     #     subcomandos de colecao

@@ -20,6 +20,8 @@ class JogoCompetitivo(Jogo):
 
     horas_jogadas: float
 
+    avaliacao: int
+
     partidas: int
 
     vit: int
@@ -117,3 +119,11 @@ class JogoCompetitivo(Jogo):
             self._taxa_vit = self.vit / self.partidas
         else:
             print("Nenhuma partida foi registrada")
+
+    def reiniciarJogo(self):
+        super().reiniciarJogo()
+        self._partidas = 0
+        self._der = 0
+        self._vit = 0
+        self._taxa_vit = 0
+        self._rank = "SEM RANK"

@@ -17,7 +17,10 @@ class Jogo():
 
     status: str
 
-    horas_jogadas: float'''                                                                      
+    horas_jogadas: float
+    
+    avaliacao: int
+    '''                                                                      
     def __init__(self, titulo: str, genero: str, plataforma: str, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0):
         #atributos: _titulo, _genero, _plataforma, _status, _horas_jogadas, _avaliacao. todos são privados e possuem getter e setter
         #apenas os atributos titulo, genero e plataforma são obrigatórios, os outros são definidos por padrão como acima

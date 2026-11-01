@@ -19,6 +19,8 @@ class JogoCooperativo(Jogo):
 
     horas_jogadas: float
 
+    avaliacao: int
+
     max_jogadores: int
 
     sessoes_coop: int
@@ -94,3 +96,8 @@ class JogoCooperativo(Jogo):
             self.participantes_frequentes.remove(nome)
         else:
             raise TypeError("Tipo de participante inválido")
+
+    def reiniciarJogo(self):
+        super().reiniciarJogo()
+        self._sessoes_coop = 0
+        self.participantes_frequentes = []
