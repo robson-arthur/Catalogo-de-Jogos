@@ -109,7 +109,7 @@ class dados():
                 """, (colecao_id, jogo_id))
 
                 conexao.commit()
-                print(f"Jogo {jogo.titulo} adicionado à coleção {colecao.nome_colecao} com sucesso!")
+                print(f"Jogo {jogo.titulo} adicionado à coleção {colecao.nome_colecao}")
 
                 return True
 
@@ -121,6 +121,49 @@ class dados():
             except Error as e:
                 conexao.rollback()
                 print(f"Erro ao adicionar jogo a coleção: {e}")
+                return False
+            finally:
+                conexao.close()
+
+    def removerJogoColecao(self, jogo: Jogo, colecao: Colecao):
+        conexao = conectar()
+
+        if conexao:
+            try:
+                cursor = conexao.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;")
+
+                cursor.execute("""
+                    SELECT id 
+                    FROM jogos
+                    WHERE titulo = ?;
+                """, (jogo.titulo,))
+                
+                jogo_id = cursor.fetchone()[0]
+
+                cursor.execute("""
+                    SELECT id
+                    FROM colecoes
+                    WHERE nome_colecao = ?;
+                """, (colecao.nome_colecao,))
+
+                colecao_id = cursor.fetchone()[0]
+                
+                # Remove a relação da tabela intermediária
+                cursor.execute("""
+                    DELETE FROM colecoes_jogos 
+                    WHERE colecao_id = ? AND jogo_id = ?
+                """, (colecao_id, jogo_id))
+
+                conexao.commit()
+                print(f"Jogo {jogo.titulo} removido da coleção {colecao.nome_colecao}")
+
+                return True
+
+            except Error as e:
+                conexao.rollback()
+                print(f"Erro ao remover jogo de coleção: {e}")
+                return False
             finally:
                 conexao.close()
 
@@ -140,14 +183,17 @@ class dados():
 
                 if not colecao:
                     print(f"Nenhuma coleção com o nome: {nome_colecao} encontrado")
-                    return None
+                    return False
 
                 nome_colecao, numero_jogos, jogos = colecao
 
-                return Colecao(nome_colecao=nome_colecao, numero_jogos=numero_jogos, jogos=jogos)
+                colecao = Colecao(nome_colecao=nome_colecao, numero_jogos=numero_jogos, jogos=jogos)
+
+                return colecao
             
             except Error as e:
                 print(f"Erro ao buscar coleção: {e}")
+                return False
             finally:
                 conexao.close()
 
@@ -504,11 +550,102 @@ class dados():
                     jogos_instanciados.append(obj)
 
                 if len(jogos_instanciados) == 0:
-                    return None
+                    return False
                 return jogos_instanciados
 
             except Error as e:
                 print(f"Erro ao listar jogos: {e}")
+            finally:
+                conexao.close()
+
+    def listarJogos_colecao(self, colecao: Colecao):
+        conexao = conectar()
+
+        if conexao:
+            try:
+
+                cursor = conexao.cursor()
+                cursor.execute("PRAGMA foreign_keys = ON;")
+
+                cursor.execute("SELECT id FROM colecoes WHERE nome_colecao = ?", (colecao.nome_colecao,))
+
+                colecao_id = cursor.lastrowid
+                
+                # Query base unindo a tabela principal e as subclasses
+                query = """
+                    SELECT 
+                        j.titulo, j.genero, j.plataforma, j.status, j.horas_jogadas, j.avaliacao,
+                        jc.progresso, jc.percent_conclusao,
+                        jcomp.partidas, jcomp.vit, jcomp.vit, jcomp.der, jcomp.rank, jcomp.taxa_vit,
+                        jcoop.max_jogadores, jcoop.sessoes_coop, jcoop.participantes_frequentes
+                    FROM colecoes_jogos cj
+                    JOIN jogos j on cj.jogo_id = j.id
+                    LEFT JOIN jogos_campanha jc ON j.id = jc.id
+                    LEFT JOIN jogos_competitivos jcomp ON j.id = jcomp.id
+                    LEFT JOIN jogos_cooperativos jcoop ON j.id = jcoop.id
+                    WHERE cj.colecao_id = ?
+                """
+                
+                
+
+                cursor.execute(query, (colecao_id,))
+                resultados = cursor.fetchall()
+                conexao.close()
+
+                jogos_instanciados = []
+
+                # Instancia os objetos corretos para cada linha retornada
+                for linha in resultados:
+                    ( titulo, genero, plataforma, status, horas_jogadas, avaliacao, progresso, percent_conclusao, partidas, vit, vit, der, rank, taxa_vit, max_jogadores, sessoes_coop, participantes_frequentes
+                    ) = linha
+
+                    # Identifica a subclasse e instancia o objeto
+                    if progresso is not None:
+                        obj = JogoCampanha(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            progresso=progresso,
+                            percent_conclusao=percent_conclusao
+                            )
+                    elif partidas is not None:
+                        obj = JogoCompetitivo(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            partidas=partidas,
+                            vit=vit,
+                            der=der,
+                            rank=rank,
+                            taxa_vit=taxa_vit
+                            )
+                    elif max_jogadores is not None:
+                        obj = JogoCooperativo(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            max_jogadores=max_jogadores,
+                            sessoes_coop=sessoes_coop,
+                            participantes_frequentes=participantes_frequentes
+                        )
+
+                    jogos_instanciados.append(obj)
+
+                if len(jogos_instanciados) == 0:
+                    return None
+                return jogos_instanciados
+
+            except Error as e:
+                print(f"Erro ao listar jogos da colecão {colecao.nome_colecao}: {e}")
             finally:
                 conexao.close()
 

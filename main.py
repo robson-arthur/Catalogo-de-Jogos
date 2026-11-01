@@ -94,7 +94,7 @@ def cmd_listar_jogos(args):
 
     jogos = db.listarJogos(genero=dados["genero"], plataforma=dados["plataforma"], status=dados["status"], nota_min=dados["nota_min"])
 
-    if jogos == None:
+    if not jogos:
         print("Nenhum jogo encontrado")
     else:
         for jogo in jogos:
@@ -135,11 +135,17 @@ def cmd_status(args):
 def cmd_cadastrar_colecao(args):
     nome_colecao = args.nome
 
+    db = dadosdb()
+
+    colecao_bd = db.buscarColecao(nome_colecao)
+
+    if colecao_bd == nome_colecao:
+        return print("Coleção já existe com esse nome")
+
     colecao = Colecao(nome_colecao=nome_colecao)
 
     print(repr(colecao))
 
-    db = dadosdb()
     db.adicionarColecao(colecao)
 
 def cmd_remover_colecao(args):
@@ -167,11 +173,59 @@ def cmd_adicionarJogo_colecao(args):
     
     resultado = db.adicionarJogoColecao(jogo,col) #caso o jogo já exista na coleção, retorna o erro e não executa
 
+    # caso a relação tenha sido cadastrada, a coleção é também atualizada
     if resultado:
         col.adicionarJogo(jogo)
         db.atualizarColecao(col, col.nome_colecao)
 
+def cmd_removerJogo_colecao(args):
+    nome_colecao = args.nome_colecao
+    nome_jogo = args.nome_jogo
+
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not jogo:
+        return print("Jogo não encontrado")
+
+    col = db.buscarColecao(nome_colecao)
+
+    if not col:
+        return print("Colecao não encontrada")
+
     
+    resultado = db.removerJogoColecao(jogo,col) #caso o jogo não exista na coleção, retorna o erro e não executa
+
+    # caso a relação tenha sido cadastrada, a coleção é também atualizada
+    if resultado:
+        col.removerJogo(jogo)
+        db.atualizarColecao(col, col.nome_colecao)
+
+def cmd_listarJogos_colecao(args):
+    dados = {
+            "nome_colecao": args.nome_colecao,
+        }
+    
+    db = dadosdb()
+
+    col = db.buscarColecao(dados["nome_colecao"])
+
+    if not col:
+        return print(f"Colecão {dados['nome_colecao']} não encontrada")
+
+
+    jogos = db.listarJogos_colecao(col)
+
+    if not jogos:
+        return print(f"Nenhum jogo da coleção {dados['nome_colecao']} encontrado")
+    
+    for jogo in jogos:
+        print()
+        print(f"{"Jogos":=^100}")
+        print(repr(jogo))
+        print("-"*100)
+    print()    
 
 ## cria o parser e adiciona os argumentos e subparsers
 def criar_parser():
@@ -292,9 +346,19 @@ def criar_parser():
         help="Remove uma coleção apartir do nome"
     )
 
+    listarJogos_colecao = acoes_colecao.add_parser(
+        "listarJogos",
+        help="Lista jogos de uma determinada coleção"
+    )
+
     adicionarJogo_colecao = acoes_colecao.add_parser(
         "adicionarJogo",
         help="Adiciona um jogo a uma coleção atráves dos nomes"
+    )
+
+    removerJogo_colecao = acoes_colecao.add_parser(
+        "removerJogo",
+        help="Remove um jogo de uma coleção atráves dos nomes"
     )
 
     ## cadastrar colecao
@@ -305,10 +369,19 @@ def criar_parser():
     remover_colecao.add_argument("--nome_colecao", required=True)
     remover_colecao.set_defaults(func=cmd_remover_colecao)
 
+    #listar jogos de uma coleção
+    listarJogos_colecao.add_argument("--nome_colecao", required=True)
+    listarJogos_colecao.set_defaults(func=cmd_listarJogos_colecao)
+
     #adicionarJogo_colecao
     adicionarJogo_colecao.add_argument("--nome_colecao", required=True)
     adicionarJogo_colecao.add_argument("--nome_jogo", required=True)
     adicionarJogo_colecao.set_defaults(func=cmd_adicionarJogo_colecao)
+
+    #removerJogo_colecao
+    removerJogo_colecao.add_argument("--nome_colecao", required=True)
+    removerJogo_colecao.add_argument("--nome_jogo", required=True)
+    removerJogo_colecao.set_defaults(func=cmd_removerJogo_colecao)
 
     return parser
 

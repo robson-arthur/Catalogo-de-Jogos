@@ -20,7 +20,7 @@ class Colecao():
     def __init__(self, nome_colecao: str, numero_jogos=0, jogos=[]):
         self.nome_colecao = nome_colecao
         self._numero_jogos = numero_jogos
-        self._jogos = jogos
+        self.jogos = jogos
 
     def __str__(self):
         return f"{self._nome_colecao}, {self._numero_jogos}, {self._jogos}"
@@ -57,6 +57,8 @@ class Colecao():
 
     @jogos.setter
     def jogos(self, novos_jogos):
+        if novos_jogos is None:
+            novos_jogos = []
         if isinstance(novos_jogos, list):
             self._jogos = novos_jogos
         elif isinstance(novos_jogos, str):
@@ -68,12 +70,15 @@ class Colecao():
     def adicionarJogo(self, novo_jogo: Jogo):
         if isinstance(novo_jogo, Jogo):
             self._jogos.append(novo_jogo.titulo)
+            self._numero_jogos += 1
         else:
             raise TypeError("Tipo de jogo inválido")
 
     def removerJogo(self, jogo: Jogo):
         if isinstance(jogo, Jogo):
-            self._jogos.remove(jogo.titulo)
+            if jogo.titulo in self._jogos:
+                self._jogos.remove(jogo.titulo)
+                self._numero_jogos -= 1
         else:
             raise TypeError("Tipo de jogo inválido")
 
