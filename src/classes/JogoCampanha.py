@@ -84,16 +84,14 @@ class JogoCampanha(Jogo):
 
         if isinstance(novo_percentual, float):
             if novo_percentual > 0 and novo_percentual <= 100:
-                if novo_percentual > self._percent_conclusao:
                     self._percent_conclusao = novo_percentual
-                else:
-                    raise Exception("Não é possível inserir percentual menor que o anterior")
             else:
                 raise Exception("Valor de percentual inválido")
         else:
             raise TypeError("Tipo de percentual inválido")
 
     def reiniciarJogo(self):
+
         super().reiniciarJogo()
         self._progresso = 0
         self._percent_conclusao = 0

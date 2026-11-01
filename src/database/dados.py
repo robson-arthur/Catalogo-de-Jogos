@@ -413,8 +413,12 @@ class dados():
                             WHERE titulo = ?
                     """, (novo_jogo.titulo, novo_jogo.genero, novo_jogo.plataforma, novo_jogo.status, novo_jogo.horas_jogadas, novo_jogo.avaliacao, antigo_jogo.titulo))
 
-                    jogo_id = cursor.lastrowid
+                    cursor.execute("""
+                        SELECT id 
+                        FROM jogos 
+                        WHERE titulo = ?""", (antigo_jogo.titulo,))
 
+                    jogo_id = cursor.fetchone()[0]
 
                     if isinstance(novo_jogo, JogoCampanha):
                         cursor.execute("""
@@ -439,7 +443,8 @@ class dados():
                                 SET max_jogadores = ?, sessoes_coop = ?, participantes_frequentes = ?
                                 WHERE id = ?
                         """, (novo_jogo.max_jogadores, novo_jogo.sessoes_coop, part_str, jogo_id))
-                    
+                    else:
+                        print("Tipo não válido")
                     
                     conexao.commit()
                     

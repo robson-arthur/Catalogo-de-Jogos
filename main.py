@@ -10,6 +10,19 @@ from src.database.dados import dados as dadosdb
 # biblioteca para criar a interface CLI de execução
 import argparse
 
+# função para confimar operações
+def confirmar():
+
+    while True:
+        resp = input("Confirma? (S/N): ").upper()
+
+        if resp == "S":
+            break
+        elif resp == "N":
+            break
+        print("Opção inválida")
+
+    return resp
 
 ## funções que implementam os argumentos nos métodos do projeto
 
@@ -109,8 +122,17 @@ def cmd_remover_jogo(args):
 
     db = dadosdb()
 
-    db.removerJogo(nome_jogo)
+    jogo = db.buscarJogo(nome_jogo)
 
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+            db.removerJogo(nome_jogo)
+        else:
+            print("Operação cancelada")
+    
 def cmd_status(args):
     nome_jogo = args.nome_jogo
     novo_status = args.status
@@ -128,8 +150,6 @@ def cmd_status(args):
         resultado = db.atualizarJogo(jogo, jogo.titulo)
         if resultado:
             print("Status atualizado")
-    else:
-        print("Jogo não encontrado")
 
 def cmd_horas(args):
     nome_jogo = args.nome_jogo
@@ -144,13 +164,16 @@ def cmd_horas(args):
 
     if jogo:
 
-        jogo.registrarHoras(horas)
+        resp = confirmar()
 
-        resultado = db.atualizarJogo(jogo, jogo.titulo)
-        if resultado:
-            print("Horas registradas")
-    else:
-        print("Jogo não encontrado")
+        if resp == "S":
+            jogo.registrarHoras(horas)
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Horas registradas")
+        else:
+            print("Operação cancelada")
 
 def cmd_reiniciar(args):
     nome_jogo = args.nome_jogo
@@ -160,15 +183,101 @@ def cmd_reiniciar(args):
     jogo = db.buscarJogo(nome_jogo)
 
     if jogo:
-        jogo.reiniciarJogo()
+
+        resp = confirmar()
+
+        if resp == "S":
+
+            jogo.reiniciarJogo()
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Jogo reiniciado")
+        else:
+            print("Operação cancelada")
+
+def cmd_avaliacao(args):
+    nome_jogo = args.nome_jogo
+    nova_avaliacao = args.avaliacao
+
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if jogo:
+        if jogo.status == "FINALIZADO":
+            jogo.avaliacao = nova_avaliacao
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Avaliação atualizada")
+        else:
+            print("Erro, jogo não finalizado")
+
+#jogos_campanha
+def cmd_progresso(args):
+    nome_jogo = args.nome_jogo
+    progresso = args.progresso
+
+    if progresso <= 0:
+        raise argparse.ArgumentTypeError("O progresso não pode ser negativo ou igual a zero")
+    
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not isinstance(jogo, JogoCampanha):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo campanha")
+
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+            jogo.atualizarProgresso(progresso)
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Progresso registrado")
+        else:
+            print("Operação cancelada")
+
+def cmd_conclusao(args):
+    nome_jogo = args.nome_jogo
+    percentual = args.conclusao
+
+    if percentual < 0 or percentual > 100:
+        raise argparse.ArgumentTypeError(f"O percentual deve estar entre 0% e 100%")
+    
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not isinstance(jogo, JogoCampanha):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo campanha")
+
+    if jogo:
+
+        jogo.atualizarPercentual(percentual)
 
         resultado = db.atualizarJogo(jogo, jogo.titulo)
         if resultado:
-            print("Jogo reiniciado")
-    else:
-        print("Jogo não encontrado")
+            print("Percentual registrado")
 
+#jogos_competitivos
+# def cmd_vit(args):
 
+# def cmd_der(args):
+
+# def cmd_rank(args):
+
+# def cmd_taxa_vit(args):
+
+#jogos_cooperativos
+# def cmd_sessoes_coop(args):
+
+# def cmd_adicionar_participantes(args):
 #colecoes
 def cmd_cadastrar_colecao(args):
     nome_colecao = args.nome
@@ -292,6 +401,15 @@ def criar_parser():
         required=True,
     )
 
+    atualizar = acoes_jogo.add_parser(
+        "atualizar",
+        help="Atualiza dados dos jogos"
+    )
+    dados = atualizar.add_subparsers(
+        dest="dados",
+        required=True
+    )
+
     cadastrar_jogo = acoes_jogo.add_parser(
         "cadastrar",
         help="Cadastrar um jogo",
@@ -311,17 +429,31 @@ def criar_parser():
         help = "Lista todos os jogos já cadastrados"
     )
 
-    status = acoes_jogo.add_parser(
+    status = dados.add_parser(
         "status",
         help="Adiciona um novo status a um jogo"
     )
-    horas = acoes_jogo.add_parser(
+    horas = dados.add_parser(
         "horas_jogadas",
         help="Registra horas jogadas"
     )
-    reiniciar = acoes_jogo.add_parser(
+    avaliacao = dados.add_parser(
+        "avaliacao",
+        help="Atualiza a avaliacao de um jogo já finalizado"
+    )
+    reiniciar = dados.add_parser(
         "reiniciar",
         help="Reseta todas as informações de um jogo(exceto nome, plataforma, genêro e max_jogadores se aplicável)"
+    )
+
+    # subcomandos para tipo campanha
+    progresso = dados.add_parser(
+        "progresso",
+        help="Registra novo progresso"
+    )
+    conclusao = dados.add_parser(
+        "conclusao",
+        help="Registra um novo percentual de conclusão"
     )
 
 
@@ -372,12 +504,27 @@ def criar_parser():
 
     #horas_jogadas
     horas.add_argument("--nome_jogo", required=True)
-    horas.add_argument("--horas", type=float)
+    horas.add_argument("--horas", type=float, required=True)
     horas.set_defaults(func=cmd_horas)
 
     #reiniciar
     reiniciar.add_argument("--nome_jogo", required=True)
     reiniciar.set_defaults(func=cmd_reiniciar)
+
+    #avaliacao
+    avaliacao.add_argument("--nome_jogo", required=True)
+    avaliacao.add_argument("--avaliacao", required=True, choices=range(0,11), type=int)
+    avaliacao.set_defaults(func=cmd_avaliacao)
+
+    #progresso
+    progresso.add_argument("--nome_jogo", required=True)
+    progresso.add_argument("--progresso", required=True, type=int)
+    progresso.set_defaults(func=cmd_progresso)
+
+    #percentual_conclusao
+    conclusao.add_argument("--nome_jogo", required=True)
+    conclusao.add_argument("--conclusao", required=True, type=float)
+    conclusao.set_defaults(func=cmd_conclusao)
 
     # --------------------------------
     #     subcomandos de colecao
