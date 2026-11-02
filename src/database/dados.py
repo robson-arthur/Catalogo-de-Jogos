@@ -234,7 +234,7 @@ class dados():
             raise TypeError("Tipo inválido de coleção")
 
     # Tratar jogos
-    def adicionarJogo(self, novo_jogo):  # retorna True caso o jogo tenha sido cadastrado, False caso já tenha um jogo com o mesmo nome e plataforma
+    def adicionarJogo(self, novo_jogo: Jogo):  # retorna True caso o jogo tenha sido cadastrado, False caso já tenha um jogo com o mesmo nome e plataforma
 
         #chea o tipo da variável novo_jogo
         if isinstance(novo_jogo, Jogo):
@@ -750,7 +750,8 @@ class dados():
                 return False
             finally:
                 conexao.close()
-        
+
+    ##relatórios    
     # Retorna número de jogos cadastrados e total de horas jogadas
     def relatorioSimples(self):
 
@@ -779,6 +780,142 @@ class dados():
             finally:
                 conexao.close()
 
+    #retorna media de avaliacao dos jogos
+    def media_avaliacao(self):
+
+        conexao = conectar()
+        if not conexao:
+            return 0.0
+
+        try:
+            cursor = conexao.cursor()
+            
+            # Usa AVG para calcular a média e filtra pelo status de finalizado
+            cursor.execute("""
+                SELECT AVG(avaliacao) 
+                FROM jogos 
+                WHERE avaliacao IS NOT NULL
+            """)
+
+            resultado = cursor.fetchone()[0]
+            
+            # Se não houver jogos ou avaliações, o AVG retorna None
+            media = resultado if resultado is not None else 0.0
+            return round(media, 2)  # Arredonda para 2 casas decimais para ficar bonito
+
+        except Exception as e:
+            print(f"Erro ao calcular média de avaliação: {e}")
+            return 0.0
+        finally:
+            conexao.close()
+
+    #retorna percentual por status mais jogados
+    def percentual_status(self):
+        conexao = conectar()
+        if not conexao:
+            return False
+
+        try:
+            cursor = conexao.cursor()
+
+            # descobre o total geral de jogos cadastrados
+            cursor.execute("SELECT COUNT(*) FROM jogos;")
+            total_jogos = cursor.fetchone()[0]
+
+            if total_jogos == 0:
+                return {}  # Evita divisão por zero se o banco estiver vazio
+
+            # conta quantos jogos existem para cada status
+            cursor.execute("""
+                SELECT status, COUNT(*) 
+                FROM jogos 
+                WHERE status IS NOT NULL 
+                GROUP BY status
+            """)
+            resultados = cursor.fetchall()
+
+            # 3. Calcula o percentual de cada status
+            percentuais = {}
+            for status, quantidade in resultados:
+                porcentagem = (quantidade / total_jogos) * 100
+                percentuais[status] = round(porcentagem, 2)
+
+            return percentuais
+
+        except Exception as e:
+            print(f"Erro ao calcular percentual por status: {e}")
+            return False
+        finally:
+            conexao.close()
+
+    # retorna top5 mais jogados
+    def top5(self):
+        conexao = conectar()
+        if not conexao:
+            return []
+
+        try:
+            cursor = conexao.cursor()
+
+            # bu    sca unindo a tabela base e as subclasses, ordenando pelas horas jogadas (do maior para o menor)
+            query = """
+                SELECT 
+                    j.id, j.titulo, j.genero, j.plataforma, j.status, j.horas_jogadas, j.avaliacao,
+                    jc.progresso, jc.percent_conclusao,
+                    jcomp.partidas, jcomp.vit, jcomp.der, jcomp.rank, jcomp.taxa_vit,
+                    jcoop.max_jogadores, jcoop.sessoes_coop, jcoop.participantes_frequentes
+                FROM jogos j
+                LEFT JOIN jogos_campanha jc ON j.id = jc.id
+                LEFT JOIN jogos_competitivos jcomp ON j.id = jcomp.id
+                LEFT JOIN jogos_cooperativos jcoop ON j.id = jcoop.id
+                ORDER BY j.horas_jogadas DESC
+                LIMIT 5
+            """
+
+            cursor.execute(query)
+            resultados = cursor.fetchall()
+            
+            lista_top5 = []
+
+            # Instancia os objetos corretos para cada linha retornada
+            for row in resultados:
+                (
+                    jogo_id, titulo, genero, plataforma, status, horas_jogadas, avaliacao,
+                    progresso, percent_conclusao,
+                    partidas, vit, der, rank, taxa_vit,
+                    max_jogadores, sessoes_coop, participantes_str
+                ) = row
+
+                if progresso is not None:
+                    obj = JogoCampanha(
+                        titulo=titulo, genero=genero, plataforma=plataforma, status=status,
+                        horas_jogadas=horas_jogadas, avaliacao=avaliacao,
+                        progresso=progresso, percent_conclusao=percent_conclusao
+                    )
+                elif partidas is not None:
+                    obj = JogoCompetitivo(
+                        titulo=titulo, genero=genero, plataforma=plataforma, status=status,
+                        horas_jogadas=horas_jogadas, avaliacao=avaliacao,
+                        partidas=partidas, vit=vit, der=der, rank=rank, taxa_vit=taxa_vit
+                    )
+                elif max_jogadores is not None:
+                    participantes_frequentes = participantes_str.split(", ") if participantes_str else []
+                    obj = JogoCooperativo(
+                        titulo=titulo, genero=genero, plataforma=plataforma, status=status,
+                        horas_jogadas=horas_jogadas, avaliacao=avaliacao,
+                        max_jogadores=max_jogadores, sessoes_coop=sessoes_coop,
+                        participantes_frequentes=participantes_frequentes
+                    )
+
+                lista_top5.append(obj)
+
+            return lista_top5
+
+        except Exception as e:
+            print(f"Erro ao buscar top 5 jogos: {e}")
+            return []
+        finally:
+            conexao.close()
 
 if __name__ == "__main__":
     db = dados()

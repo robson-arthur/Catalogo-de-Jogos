@@ -27,7 +27,7 @@ class JogoCooperativo(Jogo):
 
     participantes_frequentes: list[str]
     """
-    def __init__(self, titulo, genero, plataforma, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=0, max_jogadores=0, sessoes_coop=0, participantes_frequentes=[]):
+    def __init__(self, titulo, genero, plataforma, status="NÃO INICIADO", horas_jogadas=0.0, avaliacao=None, max_jogadores=0, sessoes_coop=0, participantes_frequentes=[]):
         super().__init__(titulo, genero, plataforma, status, horas_jogadas, avaliacao)
         self._max_jogadores = max_jogadores
         self._sessoes_coop = sessoes_coop

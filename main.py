@@ -24,6 +24,40 @@ def confirmar():
 
     return resp
 
+#relatório
+def cmd_relatorio(args):
+    tipo = args.tipo
+
+    db = dadosdb()
+
+    if tipo == "simples":
+        resultado = db.relatorioSimples()
+        if resultado:
+            print(f"Total de horas jogadas: {resultado[1]}")
+            print(f"Total de jogos cadastrados: {resultado[0]}")
+    elif tipo == "media_avaliacao":
+        resultado = db.media_avaliacao()
+        if resultado:
+            print(f"Média de avaliação dos jogos: {resultado:.2f}")
+    elif tipo == "percentual":
+        resultado = db.percentual_status()
+        if resultado:
+            print("Percentual por status:")
+            print(f"FINALIZADOS: {resultado["FINALIZADOS"]}")
+            print(f"JOGANDO: {resultado["JOGANDO"]}")
+            print(f"NÃO INCIADOS: {resultado["NÃO INCIADOS"]}")
+    elif tipo == "top5":
+        resultado = db.top5()
+        if resultado:
+            print()
+            print(f"{"Jogos":^150}")
+            for jogo in resultado:
+                print(repr(jogo))
+                print("-"*150)
+            print()
+
+
+
 ## funções que implementam os argumentos nos métodos do projeto
 
 #jogos
@@ -787,6 +821,17 @@ def criar_parser():
     removerJogo_colecao.add_argument("--nome_colecao", required=True)
     removerJogo_colecao.add_argument("--nome_jogo", required=True)
     removerJogo_colecao.set_defaults(func=cmd_removerJogo_colecao)
+
+    # ------------------
+    #  relatorios
+    # ------------------
+    relatorio = comandos.add_parser(
+        "relatorio",
+        help="Exibir relatórios dos jogos cadastrados"
+    )
+
+    relatorio.add_argument("--tipo", choices=["simples", "media_avaliacao", "percentual", "top5"], required=True)
+    relatorio.set_defaults(func=cmd_relatorio)
 
     return parser
 
