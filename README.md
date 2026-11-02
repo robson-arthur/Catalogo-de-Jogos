@@ -12,11 +12,39 @@ Software para o Tema 4 do trabalho de Programação Orientada a Objetos do curso
 - [Objetivos](#objetivos)
 - [Estrutura das classes](#estrutura-das-classes)
 - [Instruções de uso](#instruções-de-uso)
-- [Testes realizados](#testes-realizados)
+- [Exemplos de uso](#exemplo-de-uso)
 
 ## Requisitos
+- Python 3.10+
+- GIT
 
 ## Estrutura de arquivos
+```
+Catalogo-de-Jogos/
+├── docs/
+│   ├── $UML.drawio.bkp
+│   ├── UML.drawio
+│   └── UML.drawio.png
+│
+├── src/
+│   ├── classes/
+│   │   ├── __init__.py
+│   │   ├── Colecao.py
+│   │   ├── Jogo.py
+│   │   ├── JogoCampanha.py
+│   │   ├── JogoCompetitivo.py
+│   │   └── JogoCooperativo.py
+│   │
+│   └── database/
+│       ├── __init__.py
+│       ├── dados.db
+│       ├── dados.py
+│       └── database.py
+│
+├── .gitignore
+├── main.py
+└── README.md
+```
 
 ## Decisão de design
 ### Módulos
@@ -35,7 +63,7 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
 ## Estrutura das classes
 - Classe base Jogo:
     - Atributos:
-        - Título, Gênero, Plataforma, Status, Horas Jogadas, Avaliação
+        - Título, Gênero, Plataforma, Status[NÃO INICIADO, JOGANDO, FINALIZADO], Horas Jogadas, Avaliação[0-10]
     - Métodos:
       - ```atualizarStatus()```, ```registrarHoras()```, ```atualizarAvaliacao()```, ```reiniciarJogo()```
 
@@ -45,7 +73,7 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
         - Progresso, Percentual de Conclusão
     - Métodos:
       - Herda todos os métodos da classe base Jogo
-      - ```atualizarProgresso()```
+      - ```atualizarProgresso()```, ```atualizarPercentual()```, ```reinicarJogo()```
 
 - SubClasse JogoCompetitivo:
     - Atributos:
@@ -53,7 +81,7 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
         - Partidas Totais, Vitórias, Derrotas, Ranking, Taxa de vitórias
     - Métodos:
       - Herda todos os métodos da classe base Jogo
-      - ```calcularTaxaDeVitorias()```
+      - ```calcularTaxaVit()```, ```registrarVit()```, ```registrarDer()```, ```reiniciarJogo()```
         
 - SubClasse JogoCooperativo:
     - Atributos:
@@ -61,18 +89,37 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
         - Máximo de Jogadores, Sessões Coop, Participantes Frequentes
     - Métodos:
       - Herda todos os métodos da classe base Jogo
-      - ```adicionarParticipante()```, ```removerParticipantes()```, ```listarParticipantes()```
+      - ```adicionarParticipante()```, ```removerParticipante()```, ```registrarSessoes()```, ```reiniciarJogo()```
 
 - Classe Colecao:
     - Atributos:
-        - Número de Jogos, Nome da Coleção
+        - Número de Jogos, Nome da Coleção, Lista com nome dos jogos
     - Métodos:
-      - ```adicionarJogo()```, ```removerJogo()```
+      - ```adicionarJogo()```, ```removerJogo()```, ```listarJogos()```
 
 ## UML textual
 ![UML textual](docs/UML.drawio.png)
 
 ## Instruções de uso
+### Passo 1 - Instalar pasta do projeto
+- Clonar o repositório:
+![Clonar repositório](docs/img/clone_rep.png)
+- Abra o CMD e navegue até a pasta que deseja instalar o repositório:
+![Local do repositório](docs/img/local_arquivo.png)
+- Use `git clone <link-do-repo>` para baixar a pasta
+![Git clone](docs/img/git_clone.png)
 
-## Testes realizados
+### Passo 2 - Abrir o arquivo de execução
+- Abra a pasta do projeto pelo CMD:
+    - Copie o caminho:
+    ![Caminho Projeto](docs/img/caminho_rep.png)
+    - Abra pelo CMD:
+    ![CD projeto](docs/img/cd_projeto.png)
+
+### Passo 3 - Executar comando
+- Utilize sempre `python main.py` para executar os subcomando(ou `python3 main.py` caso seu sistema exija):
+![Python uso](docs/img/python_main.png)
+- Use `python main.py -h` para ver todos os subcomandos principais, cada subcomando também possui seu próprio `-h`
+
+## Exemplos de uso
 

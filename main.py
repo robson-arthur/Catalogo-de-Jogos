@@ -1,6 +1,10 @@
+# importação relativa para evitar erros de importação em diferentes sos
+import os
+import sys
+caminho_absoluto = os.path.abspath(os.curdir)
+sys.path.insert(0, caminho_absoluto)
+
 # classes usadas no projeto
-from src.database.dados import dados
-from src.classes.Jogo import Jogo
 from src.classes.JogoCooperativo import JogoCooperativo
 from src.classes.JogoCampanha import JogoCampanha
 from src.classes.JogoCompetitivo import JogoCompetitivo
@@ -55,7 +59,6 @@ def cmd_relatorio(args):
                 print(repr(jogo))
                 print("-"*150)
             print()
-
 
 
 ## funções que implementam os argumentos nos métodos do projeto
