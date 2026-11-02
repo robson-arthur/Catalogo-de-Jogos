@@ -98,6 +98,7 @@ class JogoCompetitivo(Jogo):
             if quant > 0:
                 self._vit += quant
                 self._partidas += quant
+                self.calcularTaxaVit()
             else:
                 raise Exception("Valor de vitórias inválido")
         else:
@@ -109,6 +110,7 @@ class JogoCompetitivo(Jogo):
             if quant > 0:
                 self._der += quant
                 self._partidas += quant
+                self.calcularTaxaVit()
             else:
                 raise Exception("Valor de derrotas inválido")
         else:
@@ -116,7 +118,7 @@ class JogoCompetitivo(Jogo):
 
     def calcularTaxaVit(self):
         if self.partidas != 0:
-            self._taxa_vit = self.vit / self.partidas
+            self._taxa_vit = round((self.vit / self.partidas) * 100)
         else:
             print("Nenhuma partida foi registrada")
 

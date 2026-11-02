@@ -266,13 +266,88 @@ def cmd_conclusao(args):
             print("Percentual registrado")
 
 #jogos_competitivos
-# def cmd_vit(args):
+def cmd_vit(args):
+    nome_jogo = args.nome_jogo
+    vit = args.vit
 
-# def cmd_der(args):
+    if vit <= 0:
+        raise argparse.ArgumentTypeError("A quantidade de vitórias não pode ser negativa ou igual a zero")
+    
+    db = dadosdb()
 
-# def cmd_rank(args):
+    jogo = db.buscarJogo(nome_jogo)
 
-# def cmd_taxa_vit(args):
+    if not isinstance(jogo, JogoCompetitivo):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo competitivo")
+
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+            jogo.registrarVit(vit)
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Vitórias registradas")
+        else:
+            print("Operação cancelada")
+
+def cmd_der(args):
+    nome_jogo = args.nome_jogo
+    der = args.der
+
+    if der <= 0:
+        raise argparse.ArgumentTypeError("A quantidade de derrotas não pode ser negativa ou igual a zero")
+    
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not isinstance(jogo, JogoCompetitivo):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo competitivo")
+
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+            jogo.registrarDer(der)
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Derrotas registradas")
+        else:
+            print("Operação cancelada")
+
+def cmd_rank(args):
+    nome_jogo = args.nome_jogo
+    rank = args.rank
+
+    
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not isinstance(jogo, JogoCompetitivo):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo competitivo")
+
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+            jogo.rank = rank
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Rank registrado")
+        else:
+            print("Operação cancelada")
+
 
 #jogos_cooperativos
 # def cmd_sessoes_coop(args):
@@ -455,6 +530,19 @@ def criar_parser():
         "conclusao",
         help="Registra um novo percentual de conclusão"
     )
+    # subcomandos para tipo competitivo
+    vit = dados.add_parser(
+        "vit",
+        help="Registrar vitórias"
+    )
+    der = dados.add_parser(
+        "der",
+        help="Registrar derrotas"
+    )
+    rank = dados.add_parser(
+        "rank",
+        help="Registrar novo rank"
+    )
 
 
     # Jogo de campanha
@@ -525,6 +613,21 @@ def criar_parser():
     conclusao.add_argument("--nome_jogo", required=True)
     conclusao.add_argument("--conclusao", required=True, type=float)
     conclusao.set_defaults(func=cmd_conclusao)
+
+    #vit
+    vit.add_argument("--nome_jogo", required=True)
+    vit.add_argument("--vit", required=True, type=int)
+    vit.set_defaults(func=cmd_vit)
+
+    #der
+    der.add_argument("--nome_jogo", required=True)
+    der.add_argument("--der", required=True, type=int)
+    der.set_defaults(func=cmd_der)
+
+    #rank
+    rank.add_argument("--nome_jogo", required=True)
+    rank.add_argument("--rank", required=True)
+    rank.set_defaults(func=cmd_rank)
 
     # --------------------------------
     #     subcomandos de colecao
