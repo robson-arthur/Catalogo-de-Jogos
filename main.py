@@ -108,11 +108,29 @@ def cmd_listar_jogos(args):
     if not jogos:
         print("Nenhum jogo encontrado")
     else:
+        print()
+        print(f"{"Jogos":^150}")
         for jogo in jogos:
-            print()
-            print(f"{"Jogos":=^100}")
             print(repr(jogo))
-            print("-"*100)
+            print("-"*150)
+        print()
+
+def cmd_ordenar_jogos(args):
+    tipo = args.tipo
+    ordem = args.ordem
+
+    db = dadosdb()
+
+    jogos = db.ordenarJogos(tipo, ordem)
+
+    if not jogos:
+        print("Nenhum jogo encontrado")
+    else:
+        print()
+        print(f"{"Jogos":^150}")
+        for jogo in jogos:
+            print(repr(jogo))
+            print("-"*150)
         print()
 
 def cmd_remover_jogo(args):
@@ -130,7 +148,7 @@ def cmd_remover_jogo(args):
             db.removerJogo(nome_jogo)
         else:
             print("Operação cancelada")
-    
+
 def cmd_status(args):
     nome_jogo = args.nome_jogo
     novo_status = args.status
@@ -346,7 +364,6 @@ def cmd_rank(args):
         else:
             print("Operação cancelada")
 
-
 #jogos_cooperativos
 def cmd_sessoes_coop(args):
     nome_jogo = args.nome_jogo
@@ -558,6 +575,11 @@ def criar_parser():
         help = "Lista todos os jogos já cadastrados"
     )
 
+    ordenar_jogos = acoes_jogo.add_parser(
+        "ordenar",
+        help="Lista os jogos de acordo com a ordem escolhida"
+    )
+
     status = dados.add_parser(
         "status",
         help="Adiciona um novo status a um jogo"
@@ -643,6 +665,11 @@ def criar_parser():
     listar_jogos.add_argument("--status", default=None, choices=["NÃO INICIADO", "JOGANDO", "FINALIZADO"])
     listar_jogos.add_argument("--nota_min", default=None, choices=range(0,11), type=int)
     listar_jogos.set_defaults(func=cmd_listar_jogos)
+
+    # ordenar jogos por titulo, horas_jogadas, avaliacao ou status
+    ordenar_jogos.add_argument("--tipo", choices=["titulo", "horas_jogadas", "avaliacao", "status"], default="titulo")
+    ordenar_jogos.add_argument("--ordem", choices=["ASC", "DESC"], default="ASC")
+    ordenar_jogos.set_defaults(func=cmd_ordenar_jogos)
 
     # remover jogo
     remover_jogo.add_argument("--titulo", required=True)

@@ -654,6 +654,103 @@ class dados():
             finally:
                 conexao.close()
 
+    def ordenarJogos(self, tipo:str, ordem="ASC"):
+        conexao = conectar()
+
+        if conexao:
+            try:
+                
+                cursor = conexao.cursor()
+
+                # mapeamento seguro para evitar SQL Injection nos nomes das colunas
+                colunas_validas = {
+                    "titulo": "j.titulo",
+                    "horas_jogadas": "j.horas_jogadas",
+                    "avaliacao": "j.avaliacao",
+                    "status": "j.status"
+                }
+
+                # procura no dicionário a chave q corresponde ao tipo inserido pelo usuário
+                coluna_ordenacao = colunas_validas.get(tipo, "j.titulo")
+
+                # define a ordem, crescente ou decrescente
+                ordem = ordem.upper() if ordem.upper() in ["ASC", "DESC"] else "ASC"
+
+                # Query base unindo a tabela principal e as subclasses
+                query = f"""
+                    SELECT 
+                        j.titulo, j.genero, j.plataforma, j.status, j.horas_jogadas, j.avaliacao,
+                        jc.progresso, jc.percent_conclusao,
+                        jcomp.partidas, jcomp.vit, jcomp.vit, jcomp.der, jcomp.rank, jcomp.taxa_vit,
+                        jcoop.max_jogadores, jcoop.sessoes_coop, jcoop.participantes_frequentes
+                    FROM jogos j
+                    LEFT JOIN jogos_campanha jc ON j.id = jc.id
+                    LEFT JOIN jogos_competitivos jcomp ON j.id = jcomp.id
+                    LEFT JOIN jogos_cooperativos jcoop ON j.id = jcoop.id
+                    ORDER BY {coluna_ordenacao} {ordem}, j.titulo ASC
+                """
+
+                cursor.execute(query)
+                resultados = cursor.fetchall()
+                
+                lista_jogos = []
+
+                # Instancia os objetos corretos para cada linha retornada
+                for linha in resultados:
+                    ( titulo, genero, plataforma, status, horas_jogadas, avaliacao, progresso, percent_conclusao, partidas, vit, vit, der, rank, taxa_vit, max_jogadores, sessoes_coop, participantes_frequentes
+                    ) = linha
+
+                    # Identifica a subclasse e instancia o objeto
+                    if progresso is not None:
+                        obj = JogoCampanha(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            progresso=progresso,
+                            percent_conclusao=percent_conclusao
+                            )
+                    elif partidas is not None:
+                        obj = JogoCompetitivo(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            partidas=partidas,
+                            vit=vit,
+                            der=der,
+                            rank=rank,
+                            taxa_vit=taxa_vit
+                            )
+                    elif max_jogadores is not None:
+                        obj = JogoCooperativo(
+                            titulo=titulo,
+                            genero=genero,
+                            plataforma=plataforma,
+                            status=status,
+                            horas_jogadas=horas_jogadas,
+                            avaliacao=avaliacao,
+                            max_jogadores=max_jogadores,
+                            sessoes_coop=sessoes_coop,
+                            participantes_frequentes=participantes_frequentes
+                        )
+
+                    lista_jogos.append(obj)
+
+                if len(lista_jogos) == 0:
+                    return False
+                return lista_jogos
+
+            except Error as e:
+                print(f"Erro ao ordenar jogos: {e}")
+                return False
+            finally:
+                conexao.close()
+        
     # Retorna número de jogos cadastrados e total de horas jogadas
     def relatorioSimples(self):
 
