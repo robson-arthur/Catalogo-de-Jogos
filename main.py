@@ -80,7 +80,6 @@ def cmd_cadastrar_cooperativo(args):
         "plataforma": args.plataforma,
         "horas_jogadas": args.horas_jogadas,
         "max_jogadores": args.max_jogadores,
-        "participantes_frequentes": args.participantes_frequentes
     }
     
     jogo = JogoCooperativo(
@@ -88,8 +87,7 @@ def cmd_cadastrar_cooperativo(args):
         genero=dados["genero"], 
         plataforma=dados["plataforma"],
         horas_jogadas=dados["horas_jogadas"],
-        max_jogadores=dados["max_jogadores"],
-        participantes_frequentes=dados["participantes_frequentes"]
+        max_jogadores=dados["max_jogadores"]
         )
 
     db = dadosdb()
@@ -350,9 +348,65 @@ def cmd_rank(args):
 
 
 #jogos_cooperativos
-# def cmd_sessoes_coop(args):
+def cmd_sessoes_coop(args):
+    nome_jogo = args.nome_jogo
+    sessoes = args.sessoes
 
-# def cmd_adicionar_participantes(args):
+    if sessoes <= 0:
+        raise argparse.ArgumentTypeError("A quantidade de sessões não pode ser negativa ou igual a zero")
+    
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not isinstance(jogo, JogoCooperativo):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo cooperativo")
+
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+            jogo.registrarSessoes(sessoes)
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Sessões registradas")
+        else:
+            print("Operação cancelada")
+
+def cmd_atualizar_participantes(args):
+    nome_jogo = args.nome_jogo
+    participantes = args.participantes
+  
+    db = dadosdb()
+
+    jogo = db.buscarJogo(nome_jogo)
+
+    if not isinstance(jogo, JogoCooperativo):
+        print(repr(jogo))
+        return print("Jogo encontrado não é do tipo cooperativo")
+
+    if jogo:
+        print(repr(jogo))
+        resp = confirmar()
+
+        if resp == "S":
+
+            for part in participantes:
+                # caso um nome seja repetido, o participante é removido
+                if part in jogo.participantes_frequentes:
+                    jogo.removerParticipante(part)
+                else:
+                    jogo.adicionarParticipante(part)
+
+            resultado = db.atualizarJogo(jogo, jogo.titulo)
+            if resultado:
+                print("Participantes registrados")
+        else:
+            print("Operação cancelada")
+
 #colecoes
 def cmd_cadastrar_colecao(args):
     nome_colecao = args.nome
@@ -544,6 +598,16 @@ def criar_parser():
         help="Registrar novo rank"
     )
 
+    # subcomandos para tipo cooperativo
+    sessoes = dados.add_parser(
+        "sessoes",
+        help="Registra sessões cooperativas"
+    )
+    part_frequentes = dados.add_parser(
+        "part_frequentes",
+        help="Registra um ou mais participantes frequentes"
+    )
+
 
     # Jogo de campanha
     campanha = tipos.add_parser("campanha")
@@ -571,7 +635,6 @@ def criar_parser():
     cooperativo.add_argument("-p", "--plataforma", required=True)
     cooperativo.add_argument("-hj", "--horas_jogadas", default=0.0, type=float)
     cooperativo.add_argument("--max_jogadores", default=0, type=int)
-    cooperativo.add_argument("--participantes_frequentes", nargs="*", default=[], help="Nome dos participantes frequentes")
     cooperativo.set_defaults(func=cmd_cadastrar_cooperativo)
 
     # Listar jogos por genero, plataforma, status, nota minima ou nenhum
@@ -628,6 +691,16 @@ def criar_parser():
     rank.add_argument("--nome_jogo", required=True)
     rank.add_argument("--rank", required=True)
     rank.set_defaults(func=cmd_rank)
+
+    #sessoes
+    sessoes.add_argument("--nome_jogo", required=True)
+    sessoes.add_argument("--sessoes", required=True, type=int)
+    sessoes.set_defaults(func=cmd_sessoes_coop)
+
+    #part_frequentes
+    part_frequentes.add_argument("--nome_jogo", required=True)
+    part_frequentes.add_argument("--participantes", required=True, nargs="+", help="Insira os nomes separados por um espaço simples, apenas um nome por participante, insira o nome de um participante que já existe para remover dos dados")
+    part_frequentes.set_defaults(func=cmd_atualizar_participantes)
 
     # --------------------------------
     #     subcomandos de colecao

@@ -82,10 +82,22 @@ class JogoCooperativo(Jogo):
             copia_lista = nova_lista.split(", ")
             self._participantes_frequentes = copia_lista
 
+    def registrarSessoes(self, sessoes:int):
+        if isinstance(sessoes, int):
+            if sessoes > 0:
+                self._sessoes_coop += sessoes
+            else:
+                raise Exception("Quantidade de sessões inválido")
+        else:
+            raise TypeError("Tipo de sessões inválido")       
+
     def adicionarParticipante(self, nome: str):
         if isinstance(nome, str):
             if len(nome) > 0:
-                self.participantes_frequentes.append(nome)
+                try:
+                    self.participantes_frequentes.append(nome)
+                except:
+                    pass
             else:
                 raise Exception("Participante vazio inválido")
         else:
@@ -93,6 +105,7 @@ class JogoCooperativo(Jogo):
 
     def removerParticipante(self, nome: str):
         if isinstance(nome, str):
+            
             self.participantes_frequentes.remove(nome)
         else:
             raise TypeError("Tipo de participante inválido")
