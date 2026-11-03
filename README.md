@@ -22,9 +22,15 @@ Software para o Tema 4 do trabalho de Programação Orientada a Objetos do curso
 ```
 Catalogo-de-Jogos/
 ├── docs/
-│   ├── $UML.drawio.bkp
-│   ├── UML.drawio
-│   └── UML.drawio.png
+│    ├──UML/
+│    │   ├── $UML.drawio.bkp
+│    │   ├── UML.drawio
+│    │   └── UML.drawio.png
+│    └── img/
+│         ├── imagens usadas no README.md
+│         .
+│         .
+│         .
 │
 ├── src/
 │   ├── classes/
