@@ -204,6 +204,7 @@ def cmd_status(args):
         jogo.status = novo_status
 
         resultado = db.atualizarJogo(jogo, jogo.titulo)
+        print(repr(jogo))
         if resultado:
             print("Status atualizado")
 

@@ -123,3 +123,25 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
 
 ## Exemplos de uso
 
+### Cadastrando um jogo de cada tipo
+- 1. Jogo campanha
+![Jogo campanha](docs/img/jogo_campanha.png)
+- 2. Jogo competitivo
+![Jogo competitivo](docs/img/jogo_competitivo.png)
+- 3. Jogo cooperativo
+![Jogo cooperativo](docs/img/jogo_cooperativo.png)
+
+### Alterando status de um jogo qualquer
+![Status](docs/img/atualizar_status.png)
+
+### Registrando vitórias
+![Vit](docs/img/registro_vit.png)
+
+### Adicionando(ou removendo) participantes
+![Participantes](docs/img/participantes.png)
+
+### Cadastrando coleção
+![Colecão](docs/img/cadastro_coleção.png)
+
+### Adicionando(ou removendo) Jogo a uma Coleção
+![Jogo_Coleção](docs/img/jogos_colecoes.png)

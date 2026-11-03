@@ -574,7 +574,7 @@ class dados():
 
                 cursor.execute("SELECT id FROM colecoes WHERE nome_colecao = ?", (colecao.nome_colecao,))
 
-                colecao_id = cursor.lastrowid
+                colecao_id = cursor.fetchone()[0]
                 
                 # Query base unindo a tabela principal e as subclasses
                 query = """
@@ -590,8 +590,6 @@ class dados():
                     LEFT JOIN jogos_cooperativos jcoop ON j.id = jcoop.id
                     WHERE cj.colecao_id = ?
                 """
-                
-                
 
                 cursor.execute(query, (colecao_id,))
                 resultados = cursor.fetchall()
@@ -646,7 +644,7 @@ class dados():
                     jogos_instanciados.append(obj)
 
                 if len(jogos_instanciados) == 0:
-                    return None
+                    return False
                 return jogos_instanciados
 
             except Error as e:
@@ -790,7 +788,7 @@ class dados():
         try:
             cursor = conexao.cursor()
             
-            # Usa AVG para calcular a média e filtra pelo status de finalizado
+            # Usa AVG para calcular a média
             cursor.execute("""
                 SELECT AVG(avaliacao) 
                 FROM jogos 
@@ -800,7 +798,7 @@ class dados():
             resultado = cursor.fetchone()[0]
             
             # Se não houver jogos ou avaliações, o AVG retorna None
-            media = resultado if resultado is not None else 0.0
+            media = resultado if resultado is not None else False
             return round(media, 2)
 
         except Exception as e:
