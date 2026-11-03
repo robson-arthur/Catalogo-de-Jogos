@@ -801,7 +801,7 @@ class dados():
             
             # Se não houver jogos ou avaliações, o AVG retorna None
             media = resultado if resultado is not None else 0.0
-            return round(media, 2)  # Arredonda para 2 casas decimais para ficar bonito
+            return round(media, 2)
 
         except Exception as e:
             print(f"Erro ao calcular média de avaliação: {e}")
@@ -823,7 +823,7 @@ class dados():
             total_jogos = cursor.fetchone()[0]
 
             if total_jogos == 0:
-                return {}  # Evita divisão por zero se o banco estiver vazio
+                return False  # Evita divisão por zero se o banco estiver vazio
 
             # conta quantos jogos existem para cada status
             cursor.execute("""

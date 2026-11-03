@@ -43,13 +43,17 @@ def cmd_relatorio(args):
         resultado = db.media_avaliacao()
         if resultado:
             print(f"Média de avaliação dos jogos: {resultado:.2f}")
+        else:
+            print("Sem avaliação disponível")
     elif tipo == "percentual":
         resultado = db.percentual_status()
         if resultado:
             print("Percentual por status:")
-            print(f"FINALIZADOS: {resultado["FINALIZADOS"]}")
-            print(f"JOGANDO: {resultado["JOGANDO"]}")
-            print(f"NÃO INCIADOS: {resultado["NÃO INCIADOS"]}")
+            print(f"FINALIZADOS: {resultado["FINALIZADO"] if 'FINALIZADO' in resultado else "0"}")
+            print(f"JOGANDO: {resultado["JOGANDO"] if 'JOGANDO' in resultado else "0"}")
+            print(f"NÃO INCIADOS: {resultado["NÃO INICIADO"] if 'NÃO INICIADO' in resultado else "0"}")
+        else:
+            print("Nenhum jogo cadastrado")
     elif tipo == "top5":
         resultado = db.top5()
         if resultado:
@@ -59,7 +63,6 @@ def cmd_relatorio(args):
                 print(repr(jogo))
                 print("-"*150)
             print()
-
 
 ## funções que implementam os argumentos nos métodos do projeto
 
