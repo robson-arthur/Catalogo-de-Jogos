@@ -12,7 +12,7 @@ Software para o Tema 4 do trabalho de Programação Orientada a Objetos do curso
 - [Objetivos](#objetivos)
 - [Estrutura das classes](#estrutura-das-classes)
 - [Instruções de uso](#instruções-de-uso)
-- [Exemplos de uso](#exemplo-de-uso)
+- [Exemplos de uso](#exemplos-de-uso)
 
 ## Requisitos
 - Python 3.10+
@@ -104,7 +104,7 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
       - ```adicionarJogo()```, ```removerJogo()```, ```listarJogos()```
 
 ## UML textual
-![UML textual](docs/UML.drawio.png)
+![UML textual](docs/UML/UML.drawio.png)
 
 ## Instruções de uso
 ### Passo 1 - Instalar pasta do projeto
