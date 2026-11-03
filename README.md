@@ -145,3 +145,9 @@ Gerenciar o funcionamento de um sistema de catálogo de jogos digitais, agilizan
 
 ### Adicionando(ou removendo) Jogo a uma Coleção
 ![Jogo_Coleção](docs/img/jogos_colecoes.png)
+
+### Listando jogo com filtro em plataforma
+![Listar](docs/img/listar.png)
+
+### Relatório Simples
+![Relatorio](docs/img/relatorio.png)
